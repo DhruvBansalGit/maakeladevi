@@ -344,6 +344,8 @@ const updateFormData = (
 
   if (submitStatus === 'success') {
     return (
+      
+    <Suspense fallback={<div>Loading enquiry form...</div>}>
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-4 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -361,8 +363,10 @@ const updateFormData = (
           </div>
         </div>
       </div>
+      </Suspense>
     );
   }
+  
 
   return (
     <Suspense fallback={<div>Loading enquiry form...</div>}>
