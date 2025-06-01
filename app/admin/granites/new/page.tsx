@@ -15,7 +15,7 @@ import {
   Loader2,
   Trash2
 } from 'lucide-react';
-import { GraniteFormData, ApiResponse, GraniteImage } from '@/types';
+import { GraniteFormData, ApiResponse, GraniteImage, Granite } from '@/types';
 
 const finishOptions = ['Polished', 'Honed', 'Flamed', 'Brushed', 'Leathered', 'Sandblasted'];
 const abrasionOptions = ['Low', 'Medium', 'High', 'Very High'];
@@ -208,7 +208,7 @@ const updateSize = (
         body: JSON.stringify(formData)
       });
 
-      const data: ApiResponse = await response.json();
+      const data: ApiResponse<Granite[]> = await response.json();
 
       if (data.success) {
         router.push('/admin/granites');

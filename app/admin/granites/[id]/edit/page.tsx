@@ -309,7 +309,7 @@ const handleSpecificationChange = (
         body: JSON.stringify(formData)
       });
 
-      const data: ApiResponse = await response.json();
+      const data: ApiResponse<Granite> = await response.json();
 
       if (data.success) {
         router.push('/admin/granites');
