@@ -366,7 +366,8 @@ export default function AdminGranites() {
                 </div>
 
                 {/* Quick Actions Overlay */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                <div className="absolute inset-0 bg-black/60 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+
                   <Link
                     href={`/admin/granites/${granite.id}/edit`}
                     className="bg-white/20 backdrop-blur-md text-white p-2 rounded-lg hover:bg-white/30 transition-colors"
