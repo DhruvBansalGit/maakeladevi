@@ -498,6 +498,10 @@ export default function GranitesPage() {
                                 : 'grid-cols-1'
                             }`}>
                             {filteredGranites.map((granite) => (
+                                 <Link
+                                                href={`/granites/${granite.id}`}
+                                                className="bg-white/20 backdrop-blur-md text-white rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 transition-colors"
+                                            >
                                 <div
                                     key={granite.id}
                                     className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group ${viewMode === 'list' ? 'flex' : ''
@@ -557,13 +561,9 @@ export default function GranitesPage() {
 
                                         {/* 3D View Overlay */}
                                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                            <Link
-                                                href={`/granites/${granite.id}`}
-                                                className="bg-white/20 backdrop-blur-md text-white py-2 px-4 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 transition-colors"
-                                            >
+                                           
                                                 <Eye className="w-4 h-4" />
                                                 View in 3D
-                                            </Link>
                                         </div>
                                     </div>
 
@@ -608,6 +608,7 @@ export default function GranitesPage() {
                                         </div>
                                     </div>
                                 </div>
+                                </Link>
                             ))}
                         </div>
 
