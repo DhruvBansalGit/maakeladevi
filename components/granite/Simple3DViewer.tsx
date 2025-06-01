@@ -274,7 +274,7 @@ export default function Simple3DViewer({
 
         textureLoader.setCrossOrigin('anonymous');
 
-        const graniteTexture = await new Promise<THREE.Texture>((resolve, reject) => {
+        const graniteTexture = await new Promise<THREE.Texture>((resolve) => {
           textureLoader.load(
             graniteImageUrl,
             (texture) => {
