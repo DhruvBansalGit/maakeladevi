@@ -15,7 +15,7 @@ export default function Footer() {
                 <Layers className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-bold">
-                Premium<span className="text-amber-400">Stone</span>
+                MaaKelaDevi <span className="text-amber-400">Marble House</span>
               </span>
             </Link>
             <p className="text-gray-300 leading-relaxed">
@@ -90,9 +90,8 @@ export default function Footer() {
               <div className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0" />
                 <div className="text-gray-300">
-                  <p>123 Stone Avenue,</p>
-                  <p>Sector 14, Gurugram,</p>
-                  <p>Haryana 122001, India</p>
+                  <p>Makrana Rd, Madanganj</p>
+                  <p>Kishangarh 305801, Rajasthan</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">

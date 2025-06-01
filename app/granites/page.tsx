@@ -500,10 +500,11 @@ export default function GranitesPage() {
                             {filteredGranites.map((granite) => (
                                  <Link
                                                 href={`/granites/${granite.id}`}
+                                                 key={granite.id}
                                                 className="bg-white/20 backdrop-blur-md text-white rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 transition-colors"
                                             >
                                 <div
-                                    key={granite.id}
+                                   
                                     className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group ${viewMode === 'list' ? 'flex' : ''
                                         }`}
                                 >
