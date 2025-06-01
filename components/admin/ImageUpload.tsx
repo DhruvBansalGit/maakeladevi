@@ -13,9 +13,9 @@ interface ImageUploadProps {
   folder?: string;
 }
 
-function getImageType(index: number, hasImages: boolean): GraniteImage['type'] {
-  return index === 0 && !hasImages ? 'primary' : 'secondary';
-}
+// function getImageType(index: number, hasImages: boolean): GraniteImage['type'] {
+//   return index === 0 && !hasImages ? 'primary' : 'secondary';
+// }
 
 
 export default function ImageUpload({ 
