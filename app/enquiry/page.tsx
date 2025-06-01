@@ -10,8 +10,7 @@ import {
   MapPin, 
   Phone, 
   Mail, 
-  User, 
-  Building, 
+  User,  
   FileText,
   Send,
   ArrowLeft,
@@ -21,7 +20,13 @@ import {
 import { Granite, EnquiryFormData, SelectedGranite } from '@/types';
 import { formatCurrency, isValidEmail, isValidIndianPhone } from '@/utils/helpers';
 import Button from '@/components/common/Button';
-
+interface RawGraniteItem {
+  graniteId: string;
+  selectedSize?: Granite['sizes'][number];
+  selectedFinish?: string;
+  selectedThickness?: number;
+  quantity?: number;
+}
 // Mock granite data - replace with API call
 const mockGranites: Record<string, Granite> = {
   '1': {
@@ -129,7 +134,7 @@ export default function EnquiryPage() {
     const graniteIds = searchParams.get('granites');
     const storedEnquiry = localStorage.getItem('enquiryItems');
     
-    let graniteItems: any[] = [];
+    let graniteItems: RawGraniteItem[] = [];
     
     if (graniteIds) {
       // From URL params
@@ -184,41 +189,48 @@ export default function EnquiryPage() {
     setSelectedGranites(updated);
     setFormData(prev => ({ ...prev, selectedGranites: updated }));
   };
-
-  const updateFormData = (section: keyof EnquiryFormData, field: string, value: any) => {
-    setFormData(prev => {
-      if (section === 'additionalNotes') {
-        return {
-          ...prev,
-          [section]: value
-        };
-      }
-      
-      const sectionData = prev[section];
-      if (typeof sectionData === 'object' && sectionData !== null) {
-        return {
-          ...prev,
-          [section]: {
-            ...sectionData,
-            [field]: value
-          }
-        };
-      }
-      
-      return prev;
-    });
-    
-    // Clear error when user starts typing
-    if (errors[`${section}.${field}`]) {
-      setErrors(prev => ({ ...prev, [`${section}.${field}`]: '' }));
+const updateFormData = (
+  section: keyof EnquiryFormData,
+  field: string,
+  value: string | number | boolean
+) => {
+  setFormData(prev => {
+    if (section === 'additionalNotes') {
+      return {
+        ...prev,
+        additionalNotes: typeof value === 'string' ? value : String(value)
+      };
     }
-  };
 
-  const updateNestedFormData = (section: keyof EnquiryFormData, subsection: string, field: string, value: any) => {
+    const sectionData = prev[section];
+    if (typeof sectionData === 'object' && sectionData !== null) {
+      return {
+        ...prev,
+        [section]: {
+          ...sectionData,
+          [field]: value
+        }
+      };
+    }
+
+    return prev;
+  });
+
+  if (errors[`${section}.${field}`]) {
+    setErrors(prev => ({ ...prev, [`${section}.${field}`]: '' }));
+  }
+};
+
+  const updateNestedFormData = (
+  section: keyof EnquiryFormData,
+  subsection: string,
+  field: string,
+  value: string | number | boolean
+) => {
     setFormData(prev => {
       const sectionData = prev[section];
       if (typeof sectionData === 'object' && sectionData !== null && subsection in sectionData) {
-        const subsectionData = (sectionData as any)[subsection];
+        const subsectionData = (sectionData as Record<string, any>)[subsection];
         if (typeof subsectionData === 'object' && subsectionData !== null) {
           return {
             ...prev,
@@ -334,7 +346,7 @@ export default function EnquiryPage() {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Enquiry Submitted!</h2>
           <p className="text-gray-600 mb-6">
-            Thank you for your enquiry. We'll contact you within 24 hours with a detailed quote.
+            Thank you for your enquiry. We&apos;ll contact you within 24 hours with a detailed quote.
           </p>
           <div className="space-y-3">
             <Link href="/granites">

@@ -69,7 +69,7 @@ export default function EnquirySuccessPage() {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">Site Visit & Quote</h3>
                 <p className="text-sm text-gray-600">
-                  We'll schedule a site visit for measurements and provide you with a detailed quote within 24 hours.
+                  We&apos;ll schedule a site visit for measurements and provide you with a detailed quote within 24 hours.
                 </p>
               </div>
               <div className="flex flex-col items-center text-center">
@@ -78,7 +78,7 @@ export default function EnquirySuccessPage() {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">Installation</h3>
                 <p className="text-sm text-gray-600">
-                  Once approved, we'll schedule the installation and complete your project with precision.
+                  Once approved, we&apos;ll schedule the installation and complete your project with precision.
                 </p>
               </div>
             </div>
@@ -145,7 +145,7 @@ export default function EnquirySuccessPage() {
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-xs text-gray-500">
               You will receive a confirmation email at your registered email address within a few minutes. 
-              Please check your spam folder if you don't see it in your inbox.
+              Please check your spam folder if you don&apos;t see it in your inbox.
             </p>
           </div>
         </div>

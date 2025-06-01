@@ -222,6 +222,7 @@ const mockGranites: Granite[] = [
 ];
 
 export default function GranitesPage() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [granites, setGranites] = useState<Granite[]>(mockGranites);
     const [filteredGranites, setFilteredGranites] = useState<Granite[]>(mockGranites);
     const [searchTerm, setSearchTerm] = useState('');

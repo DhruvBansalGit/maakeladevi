@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, User, Mail, Phone, MapPin, FileText, Send, AlertCircle } from 'lucide-react';
+import { X, User, MapPin, FileText, Send, AlertCircle } from 'lucide-react';
 import { Granite, EnquiryFormData } from '@/types';
 import { formatCurrency, isValidEmail, isValidIndianPhone } from '@/utils/helpers';
 import Button from '@/components/common/Button';
@@ -61,12 +61,12 @@ export default function EnquiryForm({ granite, isOpen, onClose, onSubmit }: Enqu
     additionalNotes: ''
   });
 
-  function calculateArea(size: any) {
+  function calculateArea(size: { length: number; width: number } | undefined): number {
     if (!size) return 0;
     return Math.round((size.length * size.width) / 92903) / 100; // Convert mm² to sq ft
   }
 
-  const updateFormData = (section: keyof EnquiryFormData, field: string, value: any) => {
+  const updateFormData = (section: keyof EnquiryFormData, field: string, value: string | number | boolean) => {
     setFormData(prev => ({
       ...prev,
       [section]: typeof prev[section] === 'object' 
@@ -80,11 +80,11 @@ export default function EnquiryForm({ granite, isOpen, onClose, onSubmit }: Enqu
     }
   };
 
- const updateNestedFormData = (section: keyof EnquiryFormData, subsection: string, field: string, value: any) => {
+ const updateNestedFormData = (section: keyof EnquiryFormData, subsection: string, field: string, value: string | number | boolean) => {
     setFormData(prev => {
       const sectionData = prev[section];
       if (typeof sectionData === 'object' && sectionData !== null && subsection in sectionData) {
-        const subsectionData = (sectionData as any)[subsection];
+        const subsectionData = (sectionData as Record<string, string | number | boolean | object>)[subsection];
         if (typeof subsectionData === 'object' && subsectionData !== null) {
           return {
             ...prev,

@@ -1,5 +1,6 @@
 import { NotificationData, EnquiryNote } from '@/types';
 import { formatCurrency, formatDate } from '@/utils/helpers';
+import sgMail from '@sendgrid/mail';
 import nodemailer from 'nodemailer';
 // Email service configuration
 interface EmailConfig {
@@ -9,6 +10,14 @@ interface EmailConfig {
   replyTo: string;
 }
 
+interface EmailPayload {
+  to: string;
+  cc?: string[];
+  subject: string;
+  html: string;
+  text: string;
+  replyTo?: string;
+}
 const emailConfig: EmailConfig = {
   service: process.env.EMAIL_SERVICE || 'sendgrid', // 'sendgrid', 'nodemailer', etc.
   apiKey: process.env.EMAIL_API_KEY || '',
@@ -66,13 +75,13 @@ async function sendAdminNotificationEmail(data: NotificationData): Promise<void>
   await sendEmail(emailData);
 }
 
-async function sendEmail(emailData: any): Promise<void> {
+async function sendEmail(emailData: EmailPayload): Promise<void> {
   // This is a mock implementation. In a real application, you would integrate with
   // an email service like SendGrid, AWS SES, Nodemailer, etc.
   
   if (emailConfig.service === 'sendgrid') {
     // SendGrid implementation
-    const sgMail = require('@sendgrid/mail');
+    // const sgMail = require('@sendgrid/mail');
     sgMail.setApiKey(emailConfig.apiKey);
     
     const msg = {

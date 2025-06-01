@@ -16,7 +16,7 @@ import {
   Loader2,
   Trash2
 } from 'lucide-react';
-import { Granite, GraniteFormData, ApiResponse } from '@/types';
+import { Granite, GraniteFormData, ApiResponse, GraniteImage } from '@/types';
 
 const finishOptions = ['Polished', 'Honed', 'Flamed', 'Brushed', 'Leathered', 'Sandblasted'];
 const abrasionOptions = ['Low', 'Medium', 'High', 'Very High'];
@@ -169,31 +169,36 @@ export default function EditGranitePage() {
     setHasChanges(JSON.stringify(formData) !== JSON.stringify(originalFormData));
   };
 
-  const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
-  };
+const handleInputChange = (
+  field: keyof GraniteFormData,
+  value: string | number | boolean | string[] | number[] | GraniteImage[]
+) => {
+  setFormData(prev => ({
+    ...prev,
+    [field]: value
+  }));
 
-  const handleSpecificationChange = (field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      specifications: {
-        ...prev.specifications,
-        [field]: value
-      }
-    }));
-  };
+  if (errors[field]) {
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[field];
+      return newErrors;
+    });
+  }
+};
+
+const handleSpecificationChange = (
+  field: keyof GraniteFormData['specifications'],
+  value: string | number | boolean | string[]
+) => {
+  setFormData(prev => ({
+    ...prev,
+    specifications: {
+      ...prev.specifications,
+      [field]: value
+    }
+  }));
+};
 
   const handleImageUpload = async (files: FileList) => {
     setUploadingImages(true);
@@ -258,14 +263,18 @@ export default function EditGranitePage() {
     }));
   };
 
-  const updateSize = (index: number, field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      sizes: prev.sizes.map((size, i) => 
-        i === index ? { ...size, [field]: value } : size
-      )
-    }));
-  };
+ const updateSize = (
+  index: number,
+  field: keyof GraniteFormData['sizes'][number],
+  value: string | number
+) => {
+  setFormData(prev => ({
+    ...prev,
+    sizes: prev.sizes.map((size, i) =>
+      i === index ? { ...size, [field]: value } : size
+    )
+  }));
+};
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};

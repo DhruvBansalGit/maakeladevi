@@ -1,7 +1,13 @@
 import { ref, set, get, update, query, orderByChild, equalTo } from 'firebase/database';
 import { firedatabase } from '@/lib/firebase';
-import { Enquiry, EnquiryFormData, EnquiryNote } from '@/types';
+import { Enquiry, EnquiryFormData, EnquiryNote, SelectedGranite } from '@/types';
 import { generateId } from '@/utils/helpers';
+type FirebaseEnquiry = Omit<Enquiry, 'createdAt' | 'updatedAt' | 'notes' | 'selectedGranites'> & {
+  createdAt: number;
+  updatedAt: number;
+  selectedGranites: Record<string, any>; // replace with better type if available
+  notes: Record<string, EnquiryNote>;
+};
 
 export class EnquiryService {
   private enquiriesRef = ref(firedatabase, 'enquiries');
@@ -13,7 +19,7 @@ export class EnquiryService {
       if (!snapshot.exists()) return [];
       
       const data = snapshot.val();
-      return Object.values(data).map(this.transformEnquiryData);
+      return Object.values(data).map((entry) => this.transformEnquiryData(entry as Record<string, unknown>));
     } catch (error) {
       console.error('Error fetching enquiries:', error);
       throw error;
@@ -39,7 +45,7 @@ export class EnquiryService {
   async createEnquiry(enquiryData: EnquiryFormData & { totalValue?: number }): Promise<Enquiry> {
     try {
       const enquiryId = generateId();
-      const enquiry: any = {
+      const enquiry: FirebaseEnquiry = {
         id: enquiryId,
         customerInfo: enquiryData.customerInfo,
         selectedGranites: this.transformSelectedGranites(enquiryData.selectedGranites),
@@ -53,7 +59,7 @@ export class EnquiryService {
             author: 'Customer',
             type: 'customer-communication',
             isInternal: false,
-            createdAt: Date.now()
+            createdAt: new Date()
           }
         } : {},
         totalEstimatedCost: enquiryData.totalValue || 0,
@@ -74,7 +80,7 @@ export class EnquiryService {
   // Update enquiry
   async updateEnquiry(id: string, updates: Partial<Enquiry>): Promise<Enquiry> {
     try {
-      const updateData: any = {
+      const updateData: Partial<Omit<Enquiry, 'updatedAt'>> & { updatedAt: number } = {
         ...updates,
         updatedAt: Date.now()
       };
@@ -123,7 +129,7 @@ export class EnquiryService {
       
       if (!snapshot.exists()) return [];
       
-      const data = snapshot.val();
+      const data = snapshot.val() as Record<string, Record<string, unknown>>;
       return Object.values(data).map(this.transformEnquiryData);
     } catch (error) {
       console.error('Error fetching enquiries by status:', error);
@@ -132,24 +138,32 @@ export class EnquiryService {
   }
 
   // Transform Firebase data to Enquiry type
-  private transformEnquiryData(data: any): Enquiry {
-    return {
-      ...data,
-      selectedGranites: data.selectedGranites ? Object.values(data.selectedGranites) : [],
-      notes: data.notes ? Object.values(data.notes).sort((a: any, b: any) => a.createdAt - b.createdAt) : [],
-      createdAt: new Date(data.createdAt),
-      updatedAt: new Date(data.updatedAt),
-      followUpDate: data.followUpDate ? new Date(data.followUpDate) : undefined,
-      lastContactedAt: data.lastContactedAt ? new Date(data.lastContactedAt) : undefined
-    };
-  }
+  private transformEnquiryData(data: Record<string, unknown>): Enquiry {
+  return {
+    id: data.id as string,
+    customerInfo: data.customerInfo as Enquiry['customerInfo'],
+    projectDetails: data.projectDetails as Enquiry['projectDetails'],
+    status: data.status as Enquiry['status'],
+    priority: data.priority as Enquiry['priority'],
+    selectedGranites: data.selectedGranites
+      ? (Object.values(data.selectedGranites) as Enquiry['selectedGranites'])
+      : [],
+    notes: data.notes
+      ? (Object.values(data.notes).sort((a: any, b: any) => a.createdAt - b.createdAt) as Enquiry['notes'])
+      : [],
+    createdAt: new Date(data.createdAt as number),
+    updatedAt: new Date(data.updatedAt as number),
+    followUpDate: data.followUpDate ? new Date(data.followUpDate as number) : undefined,
+    lastContactedAt: data.lastContactedAt ? new Date(data.lastContactedAt as number) : undefined,
+  };
+}
 
   // Transform selected granites for Firebase storage
-  private transformSelectedGranites(granites: any[]): Record<string, any> {
-    const transformed: Record<string, any> = {};
+  private transformSelectedGranites(granites: SelectedGranite[]): Record<string, SelectedGranite> {
+    const transformed: Record<string, SelectedGranite> = {};
     granites.forEach((granite, index) => {
-      const selectionId = `selection_${Date.now()}_${index}`;
-      transformed[selectionId] = granite;
+      const id = `selection_${Date.now()}_${index}`;
+      transformed[id] = granite;
     });
     return transformed;
   }

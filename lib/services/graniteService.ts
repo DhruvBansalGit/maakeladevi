@@ -2,7 +2,12 @@ import { ref, set, get, update, remove, query, orderByChild, equalTo } from 'fir
 import { firedatabase } from '@/lib/firebase';
 import { Granite, GraniteFormData, GraniteImage, GraniteSize } from '@/types';
 import { generateId } from '@/utils/helpers';
-
+type FirebaseGranite = Omit<Granite, 'createdAt' | 'updatedAt' | 'images' | 'sizes'> & {
+  createdAt: number;
+  updatedAt: number;
+  images: Record<string, GraniteImage>;
+  sizes: Record<string, GraniteSize>;
+};
 export class GraniteService {
   private granitesRef = ref(firedatabase, 'granites');
 
@@ -19,6 +24,8 @@ export class GraniteService {
       throw error;
     }
   }
+
+  
 
   // Get granite by ID
   async getGraniteById(id: string): Promise<Granite | null> {
@@ -70,18 +77,24 @@ async createGranite(graniteData: GraniteFormData): Promise<Granite> {
   // Update granite
 async updateGranite(id: string, updates: Partial<GraniteFormData>): Promise<Granite> {
   try {
-    const updateData: any = {
-      ...updates,
-      updatedAt: Date.now()
-    };
+   const baseData: Partial<Omit<Granite, 'createdAt' | 'updatedAt' | 'images' | 'sizes'>> = { ...updates };
 
-    if (updates.images) {
-      updateData.images = this.transformImages(updates.images);
-    }
+const updateData: Partial<Omit<Granite, 'createdAt' | 'updatedAt' | 'images' | 'sizes'>> & {
+  updatedAt: number;
+  images?: Record<string, GraniteImage>;
+  sizes?: Record<string, GraniteSize>;
+} = {
+  ...baseData,
+  updatedAt: Date.now(),
+};
 
-    if (updates.sizes) {
-      updateData.sizes = this.transformSizes(updates.sizes); // ← adds IDs
-    }
+if (updates.images) {
+  updateData.images = this.transformImages(updates.images);
+}
+
+if (updates.sizes) {
+  updateData.sizes = this.transformSizes(updates.sizes);
+}
 
     const graniteRef = ref(firedatabase, `granites/${id}`);
     await update(graniteRef, updateData);
@@ -145,7 +158,7 @@ async updateGranite(id: string, updates: Partial<GraniteFormData>): Promise<Gran
 
   // Transform Firebase data to Granite type
 private transformGraniteData(data: unknown): Granite {
-  const raw = data as Record<string, any>;
+  const raw = data as FirebaseGranite
 
   const granite: Granite = {
     id: raw.id,

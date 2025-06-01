@@ -22,7 +22,7 @@ const mockGranites: Record<string, Granite> = {
     finish: ['Polished', 'Honed', 'Flamed'],
     thickness: [18, 20, 30],
     availability: 'in-stock',
-    status:'active',
+    status: 'active',
     images: [
       { id: '1', url: '/images/granites/kashmir-white.jpg', alt: 'Kashmir White', type: 'primary', order: 1 }
     ],
@@ -47,7 +47,7 @@ const mockGranites: Record<string, Granite> = {
     color: 'Black',
     pattern: 'Speckled',
     finish: ['Polished', 'Honed'],
-    status:'active',
+    status: 'active',
     thickness: [18, 20, 30],
     availability: 'in-stock',
     images: [
@@ -157,12 +157,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating enquiry:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: { 
-          code: 'INTERNAL_ERROR', 
-          message: 'Failed to submit enquiry. Please try again.' 
-        } 
+      {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to submit enquiry. Please try again.'
+        }
       },
       { status: 500 }
     );
@@ -188,7 +188,7 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       const searchLower = search.toLowerCase();
-      filteredEnquiries = filteredEnquiries.filter(enquiry => 
+      filteredEnquiries = filteredEnquiries.filter(enquiry =>
         enquiry.customerInfo.name.toLowerCase().includes(searchLower) ||
         enquiry.customerInfo.email.toLowerCase().includes(searchLower) ||
         enquiry.customerInfo.phone.includes(search) ||
@@ -197,32 +197,28 @@ export async function GET(request: NextRequest) {
     }
 
     // Sort enquiries
-    filteredEnquiries.sort((a, b) => {
-      let aValue: any, bValue: any;
-      
-      switch (sortBy) {
-        case 'customerName':
-          aValue = a.customerInfo.name;
-          bValue = b.customerInfo.name;
-          break;
-        case 'totalValue':
-          aValue = a.totalEstimatedCost || 0;
-          bValue = b.totalEstimatedCost || 0;
-          break;
-        case 'status':
-          aValue = a.status;
-          bValue = b.status;
-          break;
-        default:
-          aValue = new Date(a.createdAt).getTime();
-          bValue = new Date(b.createdAt).getTime();
-      }
+   filteredEnquiries.sort((a, b) => {
+  const getValue = (e: Enquiry): string | number => {
+    switch (sortBy) {
+      case 'customerName':
+        return e.customerInfo.name;
+      case 'totalValue':
+        return e.totalEstimatedCost || 0;
+      case 'status':
+        return e.status;
+      default:
+        return new Date(e.createdAt).getTime();
+    }
+  };
 
-      if (sortOrder === 'desc') {
-        return bValue > aValue ? 1 : -1;
-      }
-      return aValue > bValue ? 1 : -1;
-    });
+  const aVal = getValue(a);
+  const bVal = getValue(b);
+
+  return sortOrder === 'desc'
+    ? bVal > aVal ? 1 : -1
+    : aVal > bVal ? 1 : -1;
+});
+
 
     // Paginate
     const total = filteredEnquiries.length;
@@ -244,12 +240,12 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching enquiries:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: { 
-          code: 'INTERNAL_ERROR', 
-          message: 'Failed to fetch enquiries' 
-        } 
+      {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to fetch enquiries'
+        }
       },
       { status: 500 }
     );

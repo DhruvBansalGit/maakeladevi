@@ -301,7 +301,7 @@ export interface WhatsAppMessageStatus {
 export async function getWhatsAppMessageStatus(messageId: string): Promise<WhatsAppMessageStatus | null> {
   try {
     if (whatsappConfig.provider === 'twilio') {
-      const client = require('twilio')(whatsappConfig.accountSid, whatsappConfig.authToken);
+      const client = twilio(whatsappConfig.accountSid, whatsappConfig.authToken);
       const message = await client.messages(messageId).fetch();
       
       return {
@@ -408,7 +408,7 @@ Thank you for choosing PremiumStone!
 
 // Automated WhatsApp campaigns
 export async function sendPromotionalCampaign(
-  targetAudience: 'all' | 'recent-customers' | 'high-value' | 'inactive',
+  // targetAudience: 'all' | 'recent-customers' | 'high-value' | 'inactive',
   campaignData: {
     title: string;
     message: string;
@@ -420,7 +420,7 @@ export async function sendPromotionalCampaign(
   try {
     // In a real application, you would fetch phone numbers from your database
     // based on the target audience criteria
-    const phoneNumbers = await getPhoneNumbersForAudience(targetAudience);
+    const phoneNumbers = await getPhoneNumbersForAudience();
     
     let message = campaignData.message;
     
@@ -443,7 +443,7 @@ export async function sendPromotionalCampaign(
   }
 }
 
-async function getPhoneNumbersForAudience(_audience: string): Promise<string[]> {
+async function getPhoneNumbersForAudience(): Promise<string[]> {
   // Mock implementation - in a real app, this would query your database
   const mockPhoneNumbers = [
     '+91 98765 43210',

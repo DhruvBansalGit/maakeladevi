@@ -19,7 +19,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-gray-300 leading-relaxed">
-              India's premier destination for high-quality marble and granite. 
+              India&apos;s premier destination for high-quality marble and granite. 
               Experience luxury stone surfaces with our revolutionary 3D visualization technology.
             </p>
             <div className="flex space-x-4">

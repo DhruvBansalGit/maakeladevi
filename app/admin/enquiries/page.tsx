@@ -207,9 +207,9 @@ export default function AdminEnquiries() {
     setLoading(true);
     try {
       // Replace with actual API call
-      setEnquiries(prev => prev.map(e => 
+      setEnquiries(prev => prev.map(e =>
         e.id === enquiryId 
-          ? { ...e, status: newStatus as any, updatedAt: new Date().toISOString() }
+          ? { ...e, status: newStatus as Enquiry['status'], updatedAt: new Date().toISOString() }
           : e
       ));
     } catch (error) {

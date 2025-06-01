@@ -15,7 +15,7 @@ import {
   Loader2,
   Trash2
 } from 'lucide-react';
-import { GraniteFormData, ApiResponse } from '@/types';
+import { GraniteFormData, ApiResponse, GraniteImage } from '@/types';
 
 const finishOptions = ['Polished', 'Honed', 'Flamed', 'Brushed', 'Leathered', 'Sandblasted'];
 const abrasionOptions = ['Low', 'Medium', 'High', 'Very High'];
@@ -66,7 +66,10 @@ export default function NewGranitePage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploadingImages, setUploadingImages] = useState(false);
 
-  const handleInputChange = (field: string, value: any) => {
+ const handleInputChange = (
+  field: keyof GraniteFormData,
+  value: string | number | boolean | string[] | number[] | GraniteImage[]
+) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -82,7 +85,10 @@ export default function NewGranitePage() {
     }
   };
 
-  const handleSpecificationChange = (field: string, value: any) => {
+const handleSpecificationChange = (
+  field: keyof GraniteFormData['specifications'],
+  value: string | number | boolean | string[]
+) => {
     setFormData(prev => ({
       ...prev,
       specifications: {
@@ -155,7 +161,12 @@ export default function NewGranitePage() {
     }));
   };
 
-  const updateSize = (index: number, field: string, value: any) => {
+  
+const updateSize = (
+  index: number,
+  field: keyof GraniteFormData['sizes'][number],
+  value: string | number
+) => {
     setFormData(prev => ({
       ...prev,
       sizes: prev.sizes.map((size, i) => 

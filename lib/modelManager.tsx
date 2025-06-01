@@ -1,5 +1,5 @@
 // 3D Model Management System for Granite Website
-
+import type { Texture } from 'three';
 export interface ModelConfig {
   id: string;
   name: string;
@@ -11,6 +11,7 @@ export interface ModelConfig {
   previewImage: string;
   description: string;
 }
+
 
 // Available 3D models configuration
 export const availableModels: ModelConfig[] = [
@@ -205,7 +206,7 @@ export async function loadModel(modelPath: string, onProgress?: (progress: numbe
   }
 }
 
-export async function loadTexture(texturePath: string): Promise<any> {
+export async function loadTexture(texturePath: string): Promise<Texture> {
   try {
     const THREE = await import('three');
     const loader = new THREE.TextureLoader();
@@ -220,16 +221,15 @@ export async function loadTexture(texturePath: string): Promise<any> {
 
 // Cache management for models and textures
 class ModelCache {
-  private static cache = new Map<string, any>();
+  private static cache = new Map<string, unknown>();
   private static maxCacheSize = 50; // MB
   private static currentCacheSize = 0;
 
-  static async get(key: string): Promise<any | null> {
-    return this.cache.get(key) || null;
+   static async get<T = unknown>(key: string): Promise<T | null> {
+    return (this.cache.get(key) as T) || null;
   }
 
-  static async set(key: string, data: any, sizeInMB: number): Promise<void> {
-    // Simple cache size management
+   static async set<T = unknown>(key: string, data: T, sizeInMB: number): Promise<void> {
     if (this.currentCacheSize + sizeInMB > this.maxCacheSize) {
       this.clear();
     }

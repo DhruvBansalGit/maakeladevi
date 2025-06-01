@@ -232,7 +232,7 @@ export default function GraniteDetailPage() {
                 <div className="text-center">
                     <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Granite Not Found</h2>
-                    <p className="text-gray-600 mb-6">The granite you're looking for doesn't exist.</p>
+                    <p className="text-gray-600 mb-6">The granite you&apos;re looking for doesn&apos;t exist.</p>
                     <Link href="/granites">
                         <Button>Back to Collection</Button>
                     </Link>
@@ -244,7 +244,7 @@ export default function GraniteDetailPage() {
     const calculatePrice = () => {
         const selectedSizeData = granite.sizes[selectedSize];
         const area = (selectedSizeData.length * selectedSizeData.width) / 1000000; // Convert mm² to m²
-        const areaInSqFt = area * 10.764; // Convert m² to sq ft
+        // const areaInSqFt = area * 10.764; // Convert m² to sq ft
         return selectedSizeData.price * quantity;
     };
 
