@@ -173,6 +173,42 @@ const mockGranites: Record<string, Granite> = {
         popular: false,
         status:'active'
     },
+    '5': {
+        id: '5',
+        name: 'Blue Pearl',
+        description: 'Stunning black granite with red speckles',
+        price: 200,
+        priceUnit: 'sqft',
+        category: 'premium',
+        origin: 'India',
+        color: 'Red',
+        pattern: 'Speckled',
+        finish: ['Polished', 'Honed'],
+        thickness: [18, 20, 30],
+        availability: 'in-stock',
+        images: [
+            {
+                id: '2',
+                url: '/images/granites/blue-pearl.jpg',  // ← DIFFERENT IMAGE
+                alt: 'Blue Pearl',
+                type: 'primary',
+                order: 1
+            }
+        ],
+        specifications: {
+            density: 2.7, porosity: 0.3, compressiveStrength: 220, flexuralStrength: 18,
+            abrasionResistance: 'Very High', frostResistance: true, acidResistance: 'High',
+            applications: ['Kitchen Countertops', 'Feature Walls']
+        },
+        sizes: [
+            { id: '2', length: 3000, width: 1500, thickness: 20, unit: 'mm', stock: 15, price: 200 }
+        ],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        featured: true,
+        popular: false,
+        status:'active'
+    },
 };
 
 export default function GraniteDetailPage() {

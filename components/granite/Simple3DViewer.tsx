@@ -31,34 +31,24 @@ export default function Simple3DViewer({
 
   // Get the main granite image
   const getGraniteImageUrl = () => {
-    // Debug: Log what granite images we have
     console.log('🔍 Granite object:', granite);
     console.log('📸 Available images:', granite.images);
 
-    // Try to find primary image first, then fallback to first image
     const primaryImage = granite.images.find(img => img.type === 'primary');
     const firstImage = granite.images[0];
-
     const selectedImage = primaryImage || firstImage;
 
     if (selectedImage) {
       console.log('✅ Selected granite image:', selectedImage.url);
-      console.log('🏷️ Image alt text:', selectedImage.alt);
       return selectedImage.url;
     }
 
-    // If no images found, create a granite-specific fallback path
     const graniteName = granite.name.toLowerCase().replace(/\s+/g, '-');
     const fallbackPath = `/images/granites/${graniteName}.jpg`;
-
     console.log('⚠️ No images found in granite object, trying fallback:', fallbackPath);
-    console.log('📋 Granite name:', granite.name);
-    console.log('🔧 Generated filename:', graniteName);
-
     return fallbackPath;
   };
 
-  // Get the 3D model path
   const getModelPath = () => {
     switch (modelType) {
       case 'kitchen':
@@ -71,10 +61,108 @@ export default function Simple3DViewer({
     }
   };
 
+  // Function to create proper granite material with realistic properties
+  const createGraniteMaterial = (graniteTexture: THREE.Texture) => {
+    // Configure the main diffuse texture
+    graniteTexture.wrapS = THREE.RepeatWrapping;
+    graniteTexture.wrapT = THREE.RepeatWrapping;
+    graniteTexture.minFilter = THREE.LinearMipmapLinearFilter;
+    graniteTexture.magFilter = THREE.LinearFilter;
+    graniteTexture.generateMipmaps = true;
+    graniteTexture.flipY = false;
+    
+    // Adjust repeat based on model type for proper scaling
+    switch (modelType) {
+      case 'kitchen':
+        graniteTexture.repeat.set(3, 1.5); // Kitchen counters are longer
+        break;
+      case 'bathroom':
+        graniteTexture.repeat.set(2, 1); // Bathroom vanities are smaller
+        break;
+      case 'slab':
+      default:
+        graniteTexture.repeat.set(1, 1); // Show full granite pattern on slab
+        break;
+    }
+
+    // Create a normal map from the texture for surface detail
+    const normalMap = graniteTexture.clone();
+    normalMap.needsUpdate = true;
+
+    // Create environment map for reflections (simple cube reflection)
+    const envMapTexture = new THREE.CubeTextureLoader().load([
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==', // px
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==', // nx
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==', // py
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==', // ny
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==', // pz
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='  // nz
+    ]);
+
+    // Create realistic granite material
+    const material = new THREE.MeshPhysicalMaterial({
+      // Base color and texture
+      map: graniteTexture,
+      
+      // Surface properties for granite
+      roughness: 0.15, // Polished granite is quite smooth
+      metalness: 0.05, // Granite has minimal metallic properties
+      
+      // Reflectance and sheen for polished stone look
+      reflectivity: 0.8,
+      envMap: envMapTexture,
+      envMapIntensity: 0.6,
+      
+      // Normal mapping for surface detail
+      normalMap: normalMap,
+      normalScale: new THREE.Vector2(0.3, 0.3),
+      
+      // Clear coat for polished granite finish
+      clearcoat: 0.9,
+      clearcoatRoughness: 0.1,
+      
+      // Additional properties for realism
+      transparent: false,
+      opacity: 1.0,
+      side: THREE.FrontSide,
+      
+      // Ensure proper color representation
+      color: new THREE.Color(1, 1, 1), // White base to show true texture colors
+      
+      // Disable vertex colors to use only texture
+      vertexColors: false
+    });
+
+    material.needsUpdate = true;
+    return material;
+  };
+
+  // Function to properly apply texture to meshes with correct UV mapping
+  const applyTextureToMesh = (mesh: THREE.Mesh, material: THREE.Material) => {
+    // Ensure the mesh has proper UV coordinates
+    if (!mesh.geometry.attributes.uv) {
+      console.log('🔧 Generating UV coordinates for mesh');
+      // For basic geometries, generate UV coordinates
+      if (mesh.geometry.type === 'BoxGeometry') {
+        // Box geometry should already have UVs, but ensure they're correct
+        const uvAttribute = mesh.geometry.attributes.uv;
+        if (uvAttribute) {
+          console.log('✅ UV coordinates found');
+        }
+      }
+    }
+
+    // Apply the material
+    mesh.material = material;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    
+    console.log('✅ Texture applied to mesh with proper UV mapping');
+  };
+
   useEffect(() => {
     console.log('🔄 Simple3DViewer useEffect triggered');
     console.log('📋 Current granite:', granite.name, granite.id);
-    console.log('📸 Granite images:', granite.images);
 
     let scene: Scene;
     let camera: PerspectiveCamera;
@@ -89,44 +177,46 @@ export default function Simple3DViewer({
         setError(null);
         setLoadingProgress(0);
 
-        // Dynamic import of Three.js to avoid SSR issues
         const [
           THREE,
           { GLTFLoader },
         ] = await Promise.all([
           import('three'),
           import('three/examples/jsm/loaders/GLTFLoader.js'),
-          // import('three/examples/jsm/controls/OrbitControls.js')
         ]);
 
         if (!canvasRef.current) return;
 
-        // Scene setup
+        // Scene setup with better background
         scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xf8f9fa);
+        scene.background = new THREE.Color(0xf0f0f0);
 
         // Camera setup
         camera = new THREE.PerspectiveCamera(
-          50,
+          45, // Reduced FOV for better perspective
           canvasRef.current.clientWidth / canvasRef.current.clientHeight,
           0.1,
           1000
         );
-        camera.position.set(4, 3, 4);
+        camera.position.set(5, 4, 5);
 
-        // Renderer setup
+        // Renderer setup with better quality settings
         renderer = new THREE.WebGLRenderer({
           canvas: canvasRef.current,
           antialias: true,
-          alpha: true
+          alpha: true,
+          preserveDrawingBuffer: true // For screenshots
         });
 
         renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        
+        // Enable tone mapping for better rendering
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0;
 
-        // Handle different Three.js versions
         if (renderer.outputColorSpace !== undefined) {
           renderer.outputColorSpace = THREE.SRGBColorSpace;
         }
@@ -137,52 +227,58 @@ export default function Simple3DViewer({
         controls.dampingFactor = 0.05;
         controls.minDistance = 2;
         controls.maxDistance = 15;
-        controls.maxPolarAngle = Math.PI / 2.2;
+        controls.maxPolarAngle = Math.PI / 2.1;
         controls.enablePan = true;
+        controls.autoRotate = false;
 
         setLoadingProgress(10);
 
-        // Lighting setup
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        // Enhanced lighting setup for granite
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
         scene.add(ambientLight);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(5, 5, 3);
+        // Main directional light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+        directionalLight.position.set(10, 10, 5);
         directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 1024;
-        directionalLight.shadow.mapSize.height = 1024;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
         directionalLight.shadow.camera.near = 0.5;
         directionalLight.shadow.camera.far = 50;
+        directionalLight.shadow.camera.left = -10;
+        directionalLight.shadow.camera.right = 10;
+        directionalLight.shadow.camera.top = 10;
+        directionalLight.shadow.camera.bottom = -10;
         scene.add(directionalLight);
 
-        const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
-        fillLight.position.set(-3, 2, -3);
-        scene.add(fillLight);
+        // Fill lights for even illumination
+        const fillLight1 = new THREE.DirectionalLight(0xffffff, 0.3);
+        fillLight1.position.set(-5, 5, -5);
+        scene.add(fillLight1);
+
+        const fillLight2 = new THREE.DirectionalLight(0xffffff, 0.2);
+        fillLight2.position.set(0, -5, 5);
+        scene.add(fillLight2);
+
+        // Add point light for highlights
+        const pointLight = new THREE.PointLight(0xffffff, 0.5, 20);
+        pointLight.position.set(3, 6, 3);
+        scene.add(pointLight);
 
         setLoadingProgress(20);
 
-        // Load granite texture with better error handling
+        // Load granite texture with better handling
         const textureLoader = new THREE.TextureLoader();
         const graniteImageUrl = getGraniteImageUrl();
-
         console.log('Loading granite texture from:', graniteImageUrl);
 
-        // Enable CORS for cross-origin images
         textureLoader.setCrossOrigin('anonymous');
 
-        const graniteTexture = await new Promise<THREE.Texture>((resolve) => {
+        const graniteTexture = await new Promise<THREE.Texture>((resolve, reject) => {
           textureLoader.load(
             graniteImageUrl,
             (texture) => {
-              console.log('✅ Granite texture loaded successfully:', texture);
-
-              // Configure texture immediately after loading
-              texture.wrapS = THREE.RepeatWrapping;
-              texture.wrapT = THREE.RepeatWrapping;
-              texture.repeat.set(2, 2); // Increased repeat for better visibility
-              texture.flipY = false;
-              texture.needsUpdate = true;
-
+              console.log('✅ Granite texture loaded successfully');
               resolve(texture);
             },
             (progress) => {
@@ -193,56 +289,57 @@ export default function Simple3DViewer({
             },
             (error) => {
               console.error('❌ Error loading granite texture:', error);
-              console.log('🔄 Creating fallback texture with granite pattern');
-
-              // Create a more realistic granite fallback texture
+              
+              // Create a better fallback texture
               const canvas = document.createElement('canvas');
               canvas.width = 1024;
               canvas.height = 1024;
               const ctx = canvas.getContext('2d');
+              
               if (ctx) {
-                // Create granite-like base
+                // Create granite base color
                 const gradient = ctx.createLinearGradient(0, 0, 1024, 1024);
-                gradient.addColorStop(0, '#f5f5f5');
-                gradient.addColorStop(0.5, '#e8e8e8');
-                gradient.addColorStop(1, '#d0d0d0');
+                gradient.addColorStop(0, '#f8f8f8');
+                gradient.addColorStop(0.3, '#e5e5e5');
+                gradient.addColorStop(0.7, '#d8d8d8');
+                gradient.addColorStop(1, '#cccccc');
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, 1024, 1024);
 
-                // Add granite speckles
-                for (let i = 0; i < 2000; i++) {
+                // Add realistic granite speckles
+                const colors = ['#2c2c2c', '#4a4a4a', '#666666', '#8c8c8c', '#a0a0a0'];
+                for (let i = 0; i < 3000; i++) {
                   const x = Math.random() * 1024;
                   const y = Math.random() * 1024;
-                  const size = Math.random() * 3 + 1;
-                  const opacity = Math.random() * 0.8 + 0.2;
-
+                  const size = Math.random() * 4 + 0.5;
+                  const opacity = Math.random() * 0.9 + 0.1;
+                  
                   ctx.globalAlpha = opacity;
-                  ctx.fillStyle = Math.random() > 0.5 ? '#333' : '#666';
-                  ctx.fillRect(x, y, size, size);
+                  ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+                  ctx.beginPath();
+                  ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+                  ctx.fill();
                 }
-                ctx.globalAlpha = 1;
 
                 // Add veining
-                ctx.strokeStyle = 'rgba(200, 200, 200, 0.5)';
-                ctx.lineWidth = 2;
-                for (let i = 0; i < 10; i++) {
+                ctx.globalAlpha = 0.6;
+                ctx.strokeStyle = '#b8b8b8';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < 15; i++) {
                   ctx.beginPath();
                   ctx.moveTo(Math.random() * 1024, Math.random() * 1024);
-                  ctx.quadraticCurveTo(
-                    Math.random() * 1024, Math.random() * 1024,
-                    Math.random() * 1024, Math.random() * 1024
-                  );
+                  const points = 3 + Math.floor(Math.random() * 3);
+                  for (let j = 0; j < points; j++) {
+                    ctx.lineTo(Math.random() * 1024, Math.random() * 1024);
+                  }
                   ctx.stroke();
                 }
+                
+                ctx.globalAlpha = 1;
               }
 
               const fallbackTexture = new THREE.CanvasTexture(canvas);
-              fallbackTexture.wrapS = THREE.RepeatWrapping;
-              fallbackTexture.wrapT = THREE.RepeatWrapping;
-              fallbackTexture.repeat.set(2, 2);
-              fallbackTexture.needsUpdate = true;
-
-              console.log('✅ Fallback texture created');
+              console.log('✅ Fallback granite texture created');
               resolve(fallbackTexture);
             }
           );
@@ -250,7 +347,10 @@ export default function Simple3DViewer({
 
         setLoadingProgress(50);
 
-        // Try to load 3D model, fallback to basic geometry
+        // Create granite material with the loaded texture
+        const graniteMaterial = createGraniteMaterial(graniteTexture);
+
+        // Try to load 3D model
         const gltfLoader = new GLTFLoader();
         const modelPath = getModelPath();
 
@@ -270,46 +370,30 @@ export default function Simple3DViewer({
             );
           });
         } catch (modelError) {
-          console.log('Model file not found, creating basic slab geometry', modelError);
+          console.log('Model file not found, creating basic geometry', modelError);
         }
 
         setLoadingProgress(90);
 
         // Create or use model
         if (gltf && gltf.scene) {
-          // Use loaded model
           model = gltf.scene;
           scene.add(model);
 
-          console.log('📦 Model loaded, applying granite texture to meshes...');
+          console.log('📦 Model loaded, applying granite material...');
           let meshCount = 0;
 
-          // Apply granite texture to all meshes
           model.traverse((child: THREE.Object3D) => {
             if ((child as THREE.Mesh).isMesh) {
               meshCount++;
               const mesh = child as THREE.Mesh;
-              console.log(`🎨 Applying texture to mesh ${meshCount}:`, child.name || 'unnamed');
-
-              // Create new material with granite texture
-              const material = new THREE.MeshStandardMaterial({
-                map: graniteTexture,
-                roughness: 0.3,
-                metalness: 0.1,
-                normalScale: new THREE.Vector2(0.5, 0.5)
-              });
-
-              // Ensure the material uses the texture
-              material.needsUpdate = true;
-              mesh.material = material;
-              mesh.castShadow = true;
-              mesh.receiveShadow = true;
-
-              console.log('✅ Texture applied to mesh:', child.name || 'unnamed');
+              console.log(`🎨 Applying granite material to mesh ${meshCount}`);
+              
+              applyTextureToMesh(mesh, graniteMaterial);
             }
           });
 
-          console.log(`📊 Total meshes found and textured: ${meshCount}`);
+          console.log(`📊 Total meshes textured: ${meshCount}`);
 
           // Center and scale model
           const box = new THREE.Box3().setFromObject(model);
@@ -323,38 +407,36 @@ export default function Simple3DViewer({
             model.scale.setScalar(scale);
           }
         } else {
-          // Create basic slab geometry
-          console.log('🔧 Creating basic granite slab geometry...');
+          // Create enhanced basic slab geometry
+          console.log('🔧 Creating enhanced granite slab geometry...');
 
-          const slabGeometry = new THREE.BoxGeometry(4, 0.2, 2.5);
+          const slabGeometry = new THREE.BoxGeometry(4, 0.3, 2.5, 1, 1, 1);
+          
+          // Ensure proper UV mapping for the slab
+          const uvAttribute = slabGeometry.attributes.uv;
+          if (uvAttribute) {
+            console.log('✅ Slab geometry has proper UV coordinates');
+          }
 
-          // Create material with granite texture
-          const slabMaterial = new THREE.MeshStandardMaterial({
-            map: graniteTexture,
-            roughness: 0.3,
-            metalness: 0.1,
-            side: THREE.DoubleSide // Ensure texture is visible from all angles
-          });
-
-          slabMaterial.needsUpdate = true;
-
-          model = new THREE.Mesh(slabGeometry, slabMaterial);
-          model.castShadow = true;
-          model.receiveShadow = true;
+          model = new THREE.Mesh(slabGeometry, graniteMaterial);
+          applyTextureToMesh(model as THREE.Mesh, graniteMaterial);
           scene.add(model);
 
-          console.log('✅ Basic granite slab created with texture');
+          console.log('✅ Enhanced granite slab created');
         }
 
-        // Add ground plane for shadows
-        const groundGeometry = new THREE.PlaneGeometry(10, 10);
-        const groundMaterial = new THREE.ShadowMaterial({
-          transparent: true,
-          opacity: 0.2
+        // Add environment for reflections
+        const groundSize = 12;
+        const groundGeometry = new THREE.PlaneGeometry(groundSize, groundSize);
+        const groundMaterial = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          roughness: 0.8,
+          metalness: 0.1
         });
+        
         const ground = new THREE.Mesh(groundGeometry, groundMaterial);
         ground.rotation.x = -Math.PI / 2;
-        ground.position.y = -1;
+        ground.position.y = -2;
         ground.receiveShadow = true;
         scene.add(ground);
 
@@ -379,7 +461,6 @@ export default function Simple3DViewer({
 
         window.addEventListener('resize', handleResize);
 
-        // Cleanup function
         return () => {
           if (animationId) cancelAnimationFrame(animationId);
           window.removeEventListener('resize', handleResize);
@@ -412,7 +493,7 @@ export default function Simple3DViewer({
     if (canvasRef.current) {
       const link = document.createElement('a');
       link.download = `${granite.name.toLowerCase().replace(/\s+/g, '-')}-3d-view.png`;
-      link.href = canvasRef.current.toDataURL();
+      link.href = canvasRef.current.toDataURL('image/png', 1.0);
       link.click();
     }
   };
@@ -454,7 +535,7 @@ export default function Simple3DViewer({
         <div className="absolute inset-0 bg-white bg-opacity-95 flex items-center justify-center z-10">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-700 mb-3 font-medium">Loading 3D View...</p>
+            <p className="text-gray-700 mb-3 font-medium">Loading 3D Granite Preview...</p>
             <div className="w-48 h-3 bg-gray-200 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-500 ease-out"
@@ -487,7 +568,7 @@ export default function Simple3DViewer({
           <button
             onClick={downloadImage}
             className="p-3 hover:bg-gray-100 transition-colors border-b border-gray-200"
-            title="Download Screenshot"
+            title="Download High-Quality Screenshot"
           >
             <Download className="w-5 h-5 text-gray-600" />
           </button>
@@ -541,42 +622,16 @@ export default function Simple3DViewer({
             <span>Touch & drag on mobile</span>
           </div>
           <div className="flex items-center gap-2">
-            <span>🎨</span>
-            <span>Your granite texture applied</span>
+            <span>✨</span>
+            <span>Realistic granite finish</span>
           </div>
         </div>
       </div>
 
-      {/* Debug Info Panel (only in development) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="absolute bottom-20 left-4 bg-black/90 text-white text-xs p-4 rounded-lg backdrop-blur-sm max-w-sm">
-          <div className="space-y-2">
-            <div className="text-yellow-300 font-bold">🐛 Debug Info:</div>
-            <div>🏷️ Granite: <span className="text-green-300">{granite.name}</span></div>
-            <div>🆔 ID: <span className="text-blue-300">{granite.id}</span></div>
-            <div>🖼️ Image: <span className="text-orange-300">{getGraniteImageUrl().split('/').pop()}</span></div>
-            <div>📦 Model: <span className="text-purple-300">{modelType}</span></div>
-            <div>⚡ Status: <span className={isLoading ? 'text-yellow-300' : 'text-green-300'}>{isLoading ? 'Loading...' : 'Ready'}</span></div>
-            <div>📊 Progress: <span className="text-cyan-300">{loadingProgress}%</span></div>
-            <div>📸 Images count: <span className="text-pink-300">{granite.images?.length || 0}</span></div>
-            {granite.images && granite.images.length > 0 && (
-              <div className="text-xs mt-2 border-t border-gray-600 pt-2">
-                <div className="text-gray-300">Available images:</div>
-                {granite.images.map((img, idx) => (
-                  <div key={idx} className="text-gray-400 truncate">
-                    {idx + 1}. {img.url?.split('/').pop()} ({img.type})
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Quality Badge */}
       <div className="absolute bottom-4 right-4">
         <div className="bg-green-500/90 text-white px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
-          ✨ Live 3D Preview
+          ✨ Premium 3D Granite Preview
         </div>
       </div>
     </div>
