@@ -58,7 +58,7 @@ export default function Home() {
             <div className="relative">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <Image
-                  src="/images/hero-granite.jpg"
+                  src="/images/logo/banner.png"
                   alt="Premium Granite Showcase"
                   width={600}
                   height={400}

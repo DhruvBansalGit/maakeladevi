@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, Layers, Phone, Mail } from 'lucide-react';
+import { Menu, X, Phone, Mail } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,11 +20,17 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-2 rounded-lg">
-              <Layers className="w-6 h-6 text-white" />
+            <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-1 rounded-lg">
+              <Image
+  src="/images/logo/logomkd.jpeg"
+  alt="MaaKelaDevi Logo"
+  width={40}
+  height={40}
+  className="rounded"
+/>
             </div>
             <span className="text-xl font-bold text-gray-900">
-              Premium<span className="text-amber-600">Stone</span>
+              MaaKelaDevi <span className="text-amber-600">Marble house</span>
             </span>
           </Link>
 
@@ -43,11 +50,11 @@ export default function Navbar() {
             <div className="flex items-center space-x-4 text-sm text-gray-600">
               <div className="flex items-center space-x-1">
                 <Phone className="w-4 h-4" />
-                <span>+91 98765 43210</span>
+                <span>+91 9315099107</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Mail className="w-4 h-4" />
-                <span>info@premiumstone.com</span>
+                <span>shivambansal1284@gmail.com</span>
               </div>
             </div>
 
@@ -100,11 +107,11 @@ export default function Navbar() {
               <div className="px-3 py-2 space-y-2 border-t border-gray-200 mt-2">
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Phone className="w-4 h-4" />
-                  <span>+91 98765 43210</span>
+                  <span>+91 9350942565</span>
                 </div>
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Mail className="w-4 h-4" />
-                  <span>info@premiumstone.com</span>
+                  <span>brijeshbansal263@gmail.com</span>
                 </div>
               </div>
             </div>
