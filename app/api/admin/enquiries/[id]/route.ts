@@ -1,22 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { enquiryService } from '@/lib/services/enquiryService';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
-    const { id } = params;
+    const id = request.nextUrl.pathname.split('/').at(-1); // extract [id]
+
+    if (!id) {
+      return NextResponse.json({
+        success: false,
+        error: {
+          code: 'INVALID_ID',
+          message: 'Missing enquiry ID'
+        }
+      }, { status: 400 });
+    }
+
     const enquiry = await enquiryService.getEnquiryById(id);
 
     if (!enquiry) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: { 
-            code: 'NOT_FOUND', 
-            message: 'Enquiry not found' 
-          } 
+        {
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Enquiry not found'
+          }
         },
         { status: 404 }
       );
@@ -26,30 +34,36 @@ export async function GET(
       success: true,
       data: enquiry
     });
-
   } catch (error) {
     console.error('Error fetching enquiry:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: { 
-          code: 'INTERNAL_ERROR', 
-          message: 'Failed to fetch enquiry' 
-        } 
+      {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to fetch enquiry'
+        }
       },
       { status: 500 }
     );
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest) {
   try {
-    const { id } = params;
-    const updateData = await request.json();
+    const id = request.nextUrl.pathname.split('/').at(-1); // extract [id]
 
+    if (!id) {
+      return NextResponse.json({
+        success: false,
+        error: {
+          code: 'INVALID_ID',
+          message: 'Missing enquiry ID'
+        }
+      }, { status: 400 });
+    }
+
+    const updateData = await request.json();
     const updatedEnquiry = await enquiryService.updateEnquiry(id, updateData);
 
     return NextResponse.json({
@@ -61,12 +75,12 @@ export async function PUT(
   } catch (error) {
     console.error('Error updating enquiry:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: { 
-          code: 'INTERNAL_ERROR', 
-          message: 'Failed to update enquiry' 
-        } 
+      {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to update enquiry'
+        }
       },
       { status: 500 }
     );
