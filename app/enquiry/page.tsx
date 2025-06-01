@@ -168,7 +168,7 @@ export default function EnquiryPage() {
     setFormData(prev => ({ ...prev, selectedGranites: selectedItems }));
   }, [searchParams]);
 
-  const calculateArea = (size: any) => {
+  const calculateArea = (size: { length: number; width: number } | undefined): number => {
     if (!size) return 0;
     return Math.round((size.length * size.width) / 92903) / 100; // Convert mm² to sq ft
   };
@@ -230,7 +230,7 @@ const updateFormData = (
     setFormData(prev => {
       const sectionData = prev[section];
       if (typeof sectionData === 'object' && sectionData !== null && subsection in sectionData) {
-        const subsectionData = (sectionData as Record<string, any>)[subsection];
+        const subsectionData = (sectionData as Record<string, Record<string, string | number | boolean>>)[subsection];
         if (typeof subsectionData === 'object' && subsectionData !== null) {
           return {
             ...prev,

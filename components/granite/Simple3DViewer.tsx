@@ -394,9 +394,9 @@ export default function Simple3DViewer({
           }
         };
 
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error initializing 3D viewer:', error);
-        setError(`Failed to load 3D viewer: ${error.message}`);
+        setError(`Failed to load 3D viewer: ${error}`);
         setIsLoading(false);
       }
     };

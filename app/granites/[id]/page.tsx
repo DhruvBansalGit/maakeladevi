@@ -243,7 +243,7 @@ export default function GraniteDetailPage() {
 
     const calculatePrice = () => {
         const selectedSizeData = granite.sizes[selectedSize];
-        const area = (selectedSizeData.length * selectedSizeData.width) / 1000000; // Convert mm² to m²
+        // const area = (selectedSizeData.length * selectedSizeData.width) / 1000000; // Convert mm² to m²
         // const areaInSqFt = area * 10.764; // Convert m² to sq ft
         return selectedSizeData.price * quantity;
     };

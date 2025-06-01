@@ -5,7 +5,7 @@ import { generateId } from '@/utils/helpers';
 type FirebaseEnquiry = Omit<Enquiry, 'createdAt' | 'updatedAt' | 'notes' | 'selectedGranites'> & {
   createdAt: number;
   updatedAt: number;
-  selectedGranites: Record<string, any>; // replace with better type if available
+  selectedGranites: Record<string, SelectedGranite>; // replace with better type if available
   notes: Record<string, EnquiryNote>;
 };
 
@@ -148,9 +148,11 @@ export class EnquiryService {
     selectedGranites: data.selectedGranites
       ? (Object.values(data.selectedGranites) as Enquiry['selectedGranites'])
       : [],
-    notes: data.notes
-      ? (Object.values(data.notes).sort((a: any, b: any) => a.createdAt - b.createdAt) as Enquiry['notes'])
-      : [],
+   notes: data.notes
+  ? (Object.values(data.notes)
+      .sort((a: EnquiryNote, b: EnquiryNote) => a.createdAt.getTime() - b.createdAt.getTime())
+    ) as Enquiry['notes']
+  : [],
     createdAt: new Date(data.createdAt as number),
     updatedAt: new Date(data.updatedAt as number),
     followUpDate: data.followUpDate ? new Date(data.followUpDate as number) : undefined,
