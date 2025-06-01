@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { 
   X, 
   Plus, 
@@ -364,6 +365,7 @@ const updateFormData = (
   }
 
   return (
+    <Suspense fallback={<div>Loading enquiry form...</div>}>
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm">
@@ -779,5 +781,6 @@ const updateFormData = (
         </form>
       </div>
     </div>
+    </Suspense>
   );
 }
