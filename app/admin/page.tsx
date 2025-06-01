@@ -10,7 +10,6 @@ import {
   Users, 
   ShoppingCart,
   BarChart3,
-  Calendar,
   Bell,
   Settings,
   LogOut

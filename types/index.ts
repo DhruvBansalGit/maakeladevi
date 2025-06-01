@@ -21,6 +21,7 @@ export interface Granite {
   updatedAt: Date;
   featured: boolean;
   popular: boolean;
+    status: 'active' | 'archived' | 'deleted';
 }
 
 export interface GraniteImage {
@@ -77,13 +78,13 @@ export interface CustomerInfo {
   email: string;
   phone: string;
   alternatePhone?: string;
-  address?: Address; // Made optional for admin flexibility
+  address: Address; // Made optional for admin flexibility
   company?: string;
   source: 'website' | 'referral' | 'social-media' | 'advertisement' | 'walk-in' | 'phone' | 'email' | 'admin'; // Added admin sources
 }
 
 export interface Address {
-  street?: string; // Made optional
+  street: string; // Made optional
   city: string;
   state: string;
   pincode: string;

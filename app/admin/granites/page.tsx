@@ -5,16 +5,11 @@ import Image from 'next/image';
 import { 
   Plus, 
   Search, 
-  Filter, 
   Edit3, 
   Trash2, 
   Eye, 
-  Upload,
-  Save,
-  X,
   Package,
   AlertTriangle,
-  CheckCircle,
   ArrowLeft
 } from 'lucide-react';
 
@@ -187,7 +182,7 @@ export default function AdminGranites() {
   }, [searchTerm, selectedCategory, selectedAvailability, granites]);
 
   const filterGranites = () => {
-    let filtered = granites.filter(granite => {
+    const filtered = granites.filter(granite => {
       const matchesSearch = granite.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         granite.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         granite.color.toLowerCase().includes(searchTerm.toLowerCase());

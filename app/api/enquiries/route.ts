@@ -5,7 +5,7 @@ import { sendEnquiryEmail } from '@/lib/email';
 import { sendWhatsAppNotification } from '@/lib/whatsapp';
 
 // In a real application, these would be stored in a database
-let enquiries: Enquiry[] = [];
+const enquiries: Enquiry[] = [];
 
 // Mock granite data for lookup - in a real app, this would come from your database
 const mockGranites: Record<string, Granite> = {
@@ -22,6 +22,7 @@ const mockGranites: Record<string, Granite> = {
     finish: ['Polished', 'Honed', 'Flamed'],
     thickness: [18, 20, 30],
     availability: 'in-stock',
+    status:'active',
     images: [
       { id: '1', url: '/images/granites/kashmir-white.jpg', alt: 'Kashmir White', type: 'primary', order: 1 }
     ],
@@ -46,6 +47,7 @@ const mockGranites: Record<string, Granite> = {
     color: 'Black',
     pattern: 'Speckled',
     finish: ['Polished', 'Honed'],
+    status:'active',
     thickness: [18, 20, 30],
     availability: 'in-stock',
     images: [

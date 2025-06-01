@@ -29,7 +29,7 @@ export default function Simple3DViewer({
     const primaryImage = granite.images.find(img => img.type === 'primary');
     const firstImage = granite.images[0];
     
-    let selectedImage = primaryImage || firstImage;
+    const selectedImage = primaryImage || firstImage;
     
     if (selectedImage) {
       console.log('✅ Selected granite image:', selectedImage.url);
@@ -157,7 +157,7 @@ export default function Simple3DViewer({
         // Enable CORS for cross-origin images
         textureLoader.setCrossOrigin('anonymous');
         
-        const graniteTexture = await new Promise<any>((resolve, reject) => {
+        const graniteTexture = await new Promise<any>((resolve) => {
           textureLoader.load(
             graniteImageUrl,
             (texture) => {
@@ -257,7 +257,7 @@ export default function Simple3DViewer({
             );
           });
         } catch (modelError) {
-          console.log('Model file not found, creating basic slab geometry');
+          console.log('Model file not found, creating basic slab geometry',modelError);
         }
 
         setLoadingProgress(90);

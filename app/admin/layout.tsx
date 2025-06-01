@@ -9,7 +9,6 @@ import {
   Mail, 
   BarChart3, 
   Settings, 
-  Users, 
   Bell,
   Menu,
   X,

@@ -2,7 +2,7 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react';
+import { X, Loader2, Image as ImageIcon } from 'lucide-react';
 import { imageService } from '@/lib/services/imageService';
 import { GraniteImage } from '@/types';
 
@@ -117,18 +117,18 @@ export default function ImageUpload({
     onImagesChange(updatedImages);
   };
 
-  const reorderImages = (fromIndex: number, toIndex: number) => {
-    const updatedImages = [...images];
-    const [movedImage] = updatedImages.splice(fromIndex, 1);
-    updatedImages.splice(toIndex, 0, movedImage);
+//   const reorderImages = (fromIndex: number, toIndex: number) => {
+//     const updatedImages = [...images];
+//     const [movedImage] = updatedImages.splice(fromIndex, 1);
+//     updatedImages.splice(toIndex, 0, movedImage);
     
-    // Update order numbers
-    updatedImages.forEach((img, index) => {
-      img.order = index + 1;
-    });
+//     // Update order numbers
+//     updatedImages.forEach((img, index) => {
+//       img.order = index + 1;
+//     });
 
-    onImagesChange(updatedImages);
-  };
+//     onImagesChange(updatedImages);
+//   };
 
   return (
     <div className="space-y-6">

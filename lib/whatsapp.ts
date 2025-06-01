@@ -1,5 +1,16 @@
-import { NotificationData, EnquiryNote } from '@/types';
+import { NotificationData } from '@/types';
 import { formatCurrency, formatDate } from '@/utils/helpers';
+import twilio from 'twilio';
+
+
+interface WebhookData {
+  MessageSid: string;
+  MessageStatus: string;
+  To: string;
+  From: string;
+  Body?: string;
+  ErrorMessage?: string;
+}
 
 // WhatsApp service configuration
 interface WhatsAppConfig {
@@ -76,8 +87,7 @@ async function sendTwilioWhatsAppMessage(to: string, message: string): Promise<v
       console.log('📱 Twilio credentials not configured, skipping WhatsApp message');
       return;
     }
-    
-    const client = require('twilio')(accountSid, authToken);
+    const client = twilio(accountSid, authToken);
     
     await client.messages.create({
       body: message,
@@ -247,7 +257,7 @@ Our team will contact you 1 day before.
 export async function sendBulkWhatsAppMessage(
   phoneNumbers: string[], 
   template: string, 
-  variables: Record<string, any>[] = []
+  variables: Array<Record<string, string | number | boolean>>
 ): Promise<void> {
   try {
     const messages = phoneNumbers.map((phone, index) => {
@@ -256,7 +266,7 @@ export async function sendBulkWhatsAppMessage(
       
       // Replace variables in template
       Object.keys(vars).forEach(key => {
-        message = message.replace(new RegExp(`{{${key}}}`, 'g'), vars[key]);
+        message = message.replace(new RegExp(`{{${key}}}`, 'g'), String(vars[key]));
       });
       
       return {
@@ -311,9 +321,9 @@ export async function getWhatsAppMessageStatus(messageId: string): Promise<Whats
 }
 
 // WhatsApp webhook handler for delivery status updates
-export async function handleWhatsAppWebhook(webhookData: any): Promise<void> {
+export async function handleWhatsAppWebhook(webhookData: WebhookData): Promise<void> {
   try {
-    const { MessageSid, MessageStatus, To, From, Body, ErrorMessage } = webhookData;
+    const { MessageSid, MessageStatus, To, From, ErrorMessage } = webhookData;
     
     console.log('WhatsApp webhook received:', {
       messageId: MessageSid,
@@ -433,7 +443,7 @@ export async function sendPromotionalCampaign(
   }
 }
 
-async function getPhoneNumbersForAudience(audience: string): Promise<string[]> {
+async function getPhoneNumbersForAudience(_audience: string): Promise<string[]> {
   // Mock implementation - in a real app, this would query your database
   const mockPhoneNumbers = [
     '+91 98765 43210',

@@ -12,8 +12,6 @@ import {
   Mail, 
   User, 
   Building, 
-  Calendar,
-  IndianRupee,
   FileText,
   Send,
   ArrowLeft,
@@ -51,7 +49,8 @@ const mockGranites: Record<string, Granite> = {
       { id: '1', length: 3000, width: 1500, thickness: 20, unit: 'mm', stock: 25, price: 150 },
       { id: '2', length: 2400, width: 1200, thickness: 20, unit: 'mm', stock: 15, price: 120 }
     ],
-    createdAt: new Date(), updatedAt: new Date(), featured: true, popular: true
+    createdAt: new Date(), updatedAt: new Date(), featured: true, popular: true,
+    status:'active'
   },
   '2': {
     id: '2',
@@ -77,7 +76,8 @@ const mockGranites: Record<string, Granite> = {
     sizes: [
       { id: '3', length: 3000, width: 1500, thickness: 20, unit: 'mm', stock: 15, price: 200 }
     ],
-    createdAt: new Date(), updatedAt: new Date(), featured: true, popular: false
+    createdAt: new Date(), updatedAt: new Date(), featured: true, popular: false,
+    status:'active'
   }
 };
 
@@ -92,15 +92,15 @@ export default function EnquiryPage() {
   // Form data state
   const [formData, setFormData] = useState<EnquiryFormData>({
     customerInfo: {
-      name: '',
-      email: '',
-      phone: '',
-      alternatePhone: '',
+      name: 'Dhruv',
+      email: 'bansaldhruv03@gmail.com',
+      phone: '8810551715',
+      alternatePhone: '99',
       address: {
-        street: '',
-        city: '',
-        state: '',
-        pincode: '',
+        street: 'C-1/21',
+        city: 'New Delhi',
+        state: 'Delhi',
+        pincode: '110086',
         country: 'India'
       },
       company: '',
@@ -566,131 +566,7 @@ export default function EnquiryPage() {
             </div>
 
             {/* Project Details */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                <Building className="w-5 h-5" />
-                Project Details
-              </h2>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Project Type
-                  </label>
-                  <select
-                    value={formData.projectDetails.projectType}
-                    onChange={(e) => updateFormData('projectDetails', 'projectType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                  >
-                    <option value="residential">Residential</option>
-                    <option value="commercial">Commercial</option>
-                    <option value="industrial">Industrial</option>
-                  </select>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Application
-                  </label>
-                  <select
-                    value={formData.projectDetails.application}
-                    onChange={(e) => updateFormData('projectDetails', 'application', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                  >
-                    <option value="kitchen">Kitchen Countertops</option>
-                    <option value="bathroom">Bathroom Vanities</option>
-                    <option value="flooring">Flooring</option>
-                    <option value="wall-cladding">Wall Cladding</option>
-                    <option value="outdoor">Outdoor Applications</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Timeline
-                  </label>
-                  <select
-                    value={formData.projectDetails.timeline}
-                    onChange={(e) => updateFormData('projectDetails', 'timeline', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                  >
-                    <option value="immediate">Immediate (Within 2 weeks)</option>
-                    <option value="1-month">Within 1 month</option>
-                    <option value="3-months">Within 3 months</option>
-                    <option value="6-months">Within 6 months</option>
-                    <option value="flexible">Flexible timeline</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Budget Range
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      value={formData.projectDetails.budget.min}
-                      onChange={(e) => updateNestedFormData('projectDetails', 'budget', 'min', parseInt(e.target.value))}
-                      className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                      placeholder="Min"
-                    />
-                    <input
-                      type="number"
-                      value={formData.projectDetails.budget.max}
-                      onChange={(e) => updateNestedFormData('projectDetails', 'budget', 'max', parseInt(e.target.value))}
-                      className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                      placeholder="Max"
-                    />
-                  </div>
-                </div>
-
-                <div className="md:col-span-2 space-y-3">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.projectDetails.installationRequired}
-                      onChange={(e) => updateFormData('projectDetails', 'installationRequired', e.target.checked)}
-                      className="rounded border-gray-300 text-amber-600 focus:ring-amber-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Installation service required</span>
-                  </label>
-                  
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.projectDetails.designConsultationRequired}
-                      onChange={(e) => updateFormData('projectDetails', 'designConsultationRequired', e.target.checked)}
-                      className="rounded border-gray-300 text-amber-600 focus:ring-amber-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Design consultation required</span>
-                  </label>
-                  
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.projectDetails.measurementRequired}
-                      onChange={(e) => updateFormData('projectDetails', 'measurementRequired', e.target.checked)}
-                      className="rounded border-gray-300 text-amber-600 focus:ring-amber-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Site measurement required</span>
-                  </label>
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Project Description
-                  </label>
-                  <textarea
-                    value={formData.projectDetails.description || ''}
-                    onChange={(e) => updateFormData('projectDetails', 'description', e.target.value)}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                    placeholder="Tell us more about your project..."
-                  />
-                </div>
-              </div>
-            </div>
 
             {/* Additional Notes */}
             <div className="bg-white rounded-lg shadow-sm p-6">

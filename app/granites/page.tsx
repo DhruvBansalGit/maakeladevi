@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Search, Filter, Grid3X3, List, SortAsc, SortDesc, Eye, Heart, ShoppingCart } from 'lucide-react';
+import { Search, Grid3X3, List,  Eye, Heart, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Granite } from '@/types';
@@ -41,7 +41,8 @@ const mockGranites: Granite[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
         featured: true,
-        popular: true
+        popular: true,
+        status:'active'
     },
     {
         id: '2',
@@ -75,7 +76,8 @@ const mockGranites: Granite[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
         featured: true,
-        popular: false
+        popular: false,
+        status:'active'
     },
     {
         id: '3',
@@ -109,7 +111,8 @@ const mockGranites: Granite[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
         featured: false,
-        popular: true
+        popular: true,
+        status:'active'
     },
     {
         id: '4',
@@ -143,7 +146,8 @@ const mockGranites: Granite[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
         featured: false,
-        popular: false
+        popular: false,
+        status:'active'
     },
     {
         id: '5',
@@ -177,7 +181,8 @@ const mockGranites: Granite[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
         featured: true,
-        popular: false
+        popular: false,
+        status:'active'
     },
     {
         id: '6',
@@ -211,7 +216,8 @@ const mockGranites: Granite[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
         featured: false,
-        popular: true
+        popular: true,
+        status:'active'
     }
 ];
 
@@ -226,7 +232,7 @@ export default function GranitesPage() {
     const [sortBy, setSortBy] = useState<'name' | 'price' | 'popularity'>('name');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-    const [showFilters, setShowFilters] = useState(false);
+    // const [showFilters, setShowFilters] = useState(false);
     const [favorites, setFavorites] = useState<string[]>([]);
     const [selectedGranites, setSelectedGranites] = useState<string[]>([]);
 
@@ -237,7 +243,7 @@ export default function GranitesPage() {
 
     // Filter and sort logic
     useEffect(() => {
-        let filtered = granites.filter(granite => {
+        const filtered = granites.filter(granite => {
             const matchesSearch = granite.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 granite.description.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesCategory = selectedCategory === 'all' || granite.category === selectedCategory;

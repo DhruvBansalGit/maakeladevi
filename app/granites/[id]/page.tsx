@@ -11,7 +11,6 @@ import {
     Download,
     Eye,
     Layers,
-    Ruler,
     Palette,
     MapPin,
     CheckCircle,
@@ -58,7 +57,8 @@ const mockGranites: Record<string, Granite> = {
         createdAt: new Date(),
         updatedAt: new Date(),
         featured: true,
-        popular: true
+        popular: true,
+        status:'active'
     },
     '2': {
         id: '2',
@@ -99,7 +99,8 @@ const mockGranites: Record<string, Granite> = {
         createdAt: new Date(),
         updatedAt: new Date(),
         featured: true,
-        popular: false
+        popular: false,
+        status:'active'
     },
     '3': {
         id: '3',
@@ -134,7 +135,8 @@ const mockGranites: Record<string, Granite> = {
         createdAt: new Date(),
         updatedAt: new Date(),
         featured: false,
-        popular: true
+        popular: true,
+        status:'active'
     },'4': {
         id: '4',
         name: 'Imperial Red',
@@ -168,7 +170,8 @@ const mockGranites: Record<string, Granite> = {
         createdAt: new Date(),
         updatedAt: new Date(),
         featured: true,
-        popular: false
+        popular: false,
+        status:'active'
     },
 };
 

@@ -3,16 +3,13 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Search, 
-  Filter, 
   Mail, 
   Phone, 
   MessageSquare, 
-  Calendar,
   ArrowLeft,
   Eye,
   Clock,
   CheckCircle,
-  XCircle,
   User,
   Package,
   ExternalLink,
@@ -172,7 +169,7 @@ export default function AdminEnquiries() {
   }, [searchTerm, selectedStatus, selectedPriority, selectedSource, sortBy, sortOrder, enquiries]);
 
   const filterAndSortEnquiries = () => {
-    let filtered = enquiries.filter(enquiry => {
+    const filtered = enquiries.filter(enquiry => {
       const matchesSearch = 
         enquiry.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         enquiry.customerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -1,4 +1,4 @@
-import { ref, set, get, update, remove, query, orderByChild, equalTo } from 'firebase/database';
+import { ref, set, get, update, query, orderByChild, equalTo } from 'firebase/database';
 import { firedatabase } from '@/lib/firebase';
 import { Enquiry, EnquiryFormData, EnquiryNote } from '@/types';
 import { generateId } from '@/utils/helpers';

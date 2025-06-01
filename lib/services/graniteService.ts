@@ -1,6 +1,6 @@
-import { ref, set, get, update, remove, push, query, orderByChild, equalTo } from 'firebase/database';
+import { ref, set, get, update, remove, query, orderByChild, equalTo } from 'firebase/database';
 import { firedatabase } from '@/lib/firebase';
-import { Granite, GraniteFormData } from '@/types';
+import { Granite, GraniteFormData, GraniteImage, GraniteSize } from '@/types';
 import { generateId } from '@/utils/helpers';
 
 export class GraniteService {
@@ -36,58 +36,67 @@ export class GraniteService {
   }
 
   // Create new granite
-  async createGranite(graniteData: GraniteFormData): Promise<Granite> {
-    try {
-      const graniteId = generateId();
-      const granite: any = {
-        id: graniteId,
-        ...graniteData,
-        images: this.transformImages(graniteData.images || []),
-        sizes: this.transformSizes(graniteData.sizes),
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-        status: 'active'
-      };
+async createGranite(graniteData: GraniteFormData): Promise<Granite> {
+  try {
+    const id = generateId();
 
-      const graniteRef = ref(firedatabase, `granites/${graniteId}`);
-      await set(graniteRef, granite);
-      
-      return this.transformGraniteData(granite);
-    } catch (error) {
-      console.error('Error creating granite:', error);
-      throw error;
-    }
+    const dataToStore: Omit<Granite, 'createdAt' | 'updatedAt' | 'images' | 'sizes'> & {
+      createdAt: number;
+      updatedAt: number;
+      images: Record<string, GraniteImage>;
+      sizes: Record<string, GraniteSize>;
+    } = {
+      id,
+      ...graniteData,
+      images: this.transformImages(graniteData.images || []),
+      sizes: this.transformSizes(graniteData.sizes),
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      status: 'active'
+    };
+
+    const graniteRef = ref(firedatabase, `granites/${id}`);
+    await set(graniteRef, dataToStore);
+
+    return this.transformGraniteData(dataToStore);
+  } catch (error) {
+    console.error('Error creating granite:', error);
+    throw error;
   }
+}
+
+
 
   // Update granite
-  async updateGranite(id: string, updates: Partial<GraniteFormData>): Promise<Granite> {
-    try {
-      const updateData: any = {
-        ...updates,
-        updatedAt: Date.now()
-      };
+async updateGranite(id: string, updates: Partial<GraniteFormData>): Promise<Granite> {
+  try {
+    const updateData: any = {
+      ...updates,
+      updatedAt: Date.now()
+    };
 
-      if (updates.images) {
-        updateData.images = this.transformImages(updates.images);
-      }
-
-      if (updates.sizes) {
-        updateData.sizes = this.transformSizes(updates.sizes);
-      }
-
-      const graniteRef = ref(firedatabase, `granites/${id}`);
-      await update(graniteRef, updateData);
-      
-      // Return updated granite
-      const updatedGranite = await this.getGraniteById(id);
-      if (!updatedGranite) throw new Error('Granite not found after update');
-      
-      return updatedGranite;
-    } catch (error) {
-      console.error('Error updating granite:', error);
-      throw error;
+    if (updates.images) {
+      updateData.images = this.transformImages(updates.images);
     }
+
+    if (updates.sizes) {
+      updateData.sizes = this.transformSizes(updates.sizes); // ← adds IDs
+    }
+
+    const graniteRef = ref(firedatabase, `granites/${id}`);
+    await update(graniteRef, updateData);
+
+    const updatedGranite = await this.getGraniteById(id);
+    if (!updatedGranite) throw new Error('Granite not found after update');
+
+    return updatedGranite;
+  } catch (error) {
+    console.error('Error updating granite:', error);
+    throw error;
   }
+}
+
+
 
   // Delete granite
   async deleteGranite(id: string): Promise<void> {
@@ -135,41 +144,54 @@ export class GraniteService {
   }
 
   // Transform Firebase data to Granite type
-  private transformGraniteData(data: any): Granite {
-    return {
-      ...data,
-      images: data.images ? Object.values(data.images) : [],
-      sizes: data.sizes ? Object.values(data.sizes) : [],
-      createdAt: new Date(data.createdAt),
-      updatedAt: new Date(data.updatedAt)
-    };
-  }
+private transformGraniteData(data: unknown): Granite {
+  const raw = data as Record<string, any>;
+
+  const granite: Granite = {
+    id: raw.id,
+    name: raw.name,
+    description: raw.description,
+    price: raw.price,
+    priceUnit: raw.priceUnit,
+    category: raw.category,
+    origin: raw.origin,
+    color: raw.color,
+    pattern: raw.pattern,
+    finish: raw.finish,
+    thickness: raw.thickness,
+    availability: raw.availability,
+    images: raw.images ? Object.values(raw.images) as GraniteImage[] : [],
+    specifications: raw.specifications,
+    sizes: raw.sizes ? Object.values(raw.sizes) as GraniteSize[] : [],
+    createdAt: new Date(raw.createdAt),
+    updatedAt: new Date(raw.updatedAt),
+    featured: raw.featured,
+    popular: raw.popular,
+    status: raw.status
+  };
+
+  return granite;
+}
 
   // Transform images for Firebase storage
-  private transformImages(images: any[]): Record<string, any> {
-    const transformedImages: Record<string, any> = {};
-    images.forEach((image, index) => {
-      const imageId = image.id || `img_${Date.now()}_${index}`;
-      transformedImages[imageId] = {
-        ...image,
-        id: imageId
-      };
-    });
-    return transformedImages;
-  }
+ private transformImages(images: GraniteImage[]): Record<string, GraniteImage> {
+  const transformed: Record<string, GraniteImage> = {};
+  images.forEach((img, index) => {
+    const imageId = img.id || `img_${Date.now()}_${index}`;
+    transformed[imageId] = { ...img, id: imageId };
+  });
+  return transformed;
+}
 
   // Transform sizes for Firebase storage
-  private transformSizes(sizes: any[]): Record<string, any> {
-    const transformedSizes: Record<string, any> = {};
-    sizes.forEach((size, index) => {
-      const sizeId = size.id || `size_${Date.now()}_${index}`;
-      transformedSizes[sizeId] = {
-        ...size,
-        id: sizeId
-      };
-    });
-    return transformedSizes;
-  }
+private transformSizes(sizes: Omit<GraniteSize, 'id'>[]): Record<string, GraniteSize> {
+  const transformed: Record<string, GraniteSize> = {};
+  sizes.forEach((size, index) => {
+    const sizeId = `size_${Date.now()}_${index}`; // ✅ always generate ID
+    transformed[sizeId] = { ...size, id: sizeId };
+  });
+  return transformed;
+}
 }
 
 export const graniteService = new GraniteService();

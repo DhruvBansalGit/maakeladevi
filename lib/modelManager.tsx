@@ -183,7 +183,6 @@ export class ModelManager {
 // Model loading utilities
 export async function loadModel(modelPath: string, onProgress?: (progress: number) => void) {
   try {
-    const THREE = await import('three');
     const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
 
     const loader = new GLTFLoader();

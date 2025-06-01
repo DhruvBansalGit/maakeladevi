@@ -1,6 +1,6 @@
 import { NotificationData, EnquiryNote } from '@/types';
 import { formatCurrency, formatDate } from '@/utils/helpers';
-
+import nodemailer from 'nodemailer';
 // Email service configuration
 interface EmailConfig {
   service: string;
@@ -87,7 +87,6 @@ async function sendEmail(emailData: any): Promise<void> {
     await sgMail.send(msg);
   } else if (emailConfig.service === 'nodemailer') {
     // Nodemailer implementation (for SMTP)
-    const nodemailer = require('nodemailer');
     
     const transporter = nodemailer.createTransporter({
       host: process.env.SMTP_HOST,

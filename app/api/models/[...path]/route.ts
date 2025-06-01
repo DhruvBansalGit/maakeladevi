@@ -99,6 +99,7 @@ export async function HEAD(
     return response;
 
   } catch (error) {
+    console.log(error)
     return new NextResponse(null, { status: 404 });
   }
 }

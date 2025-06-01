@@ -7,11 +7,8 @@ import Link from 'next/link';
 import { 
   ArrowLeft, 
   Save, 
-  Upload, 
   X, 
   Plus, 
-  Minus, 
-  Eye,
   AlertCircle,
   Package,
   Image as ImageIcon,
