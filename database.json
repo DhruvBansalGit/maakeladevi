@@ -1,0 +1,237 @@
+{
+  "granites": {
+    "1": {
+      "id": "1",
+      "name": "Kashmir White",
+      "description": "Elegant white granite with subtle gray veining, perfect for modern kitchens and bathrooms.",
+      "price": 150,
+      "priceUnit": "sqft",
+      "category": "premium",
+      "origin": "India",
+      "color": "White",
+      "pattern": "Veined",
+      "finish": ["Polished", "Honed", "Flamed"],
+      "thickness": [18, 20, 30],
+      "availability": "in-stock",
+      "images": {
+        "img_001": {
+          "id": "img_001",
+          "url": "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/granites/kashmir-white-1.jpg",
+          "alt": "Kashmir White Granite",
+          "type": "primary",
+          "order": 1,
+          "cloudinaryPublicId": "granites/kashmir-white-1",
+          "width": 1200,
+          "height": 800
+        },
+        "img_002": {
+          "id": "img_002",
+          "url": "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/granites/kashmir-white-2.jpg",
+          "alt": "Kashmir White Granite Detail",
+          "type": "secondary",
+          "order": 2,
+          "cloudinaryPublicId": "granites/kashmir-white-2",
+          "width": 1200,
+          "height": 800
+        }
+      },
+      "specifications": {
+        "density": 2.6,
+        "porosity": 0.5,
+        "compressiveStrength": 200,
+        "flexuralStrength": 15,
+        "abrasionResistance": "High",
+        "frostResistance": true,
+        "acidResistance": "Medium",
+        "applications": ["Kitchen Countertops", "Bathroom Vanities", "Flooring"]
+      },
+      "sizes": {
+        "size_001": {
+          "id": "size_001",
+          "length": 3000,
+          "width": 1500,
+          "thickness": 20,
+          "unit": "mm",
+          "stock": 25,
+          "price": 150
+        },
+        "size_002": {
+          "id": "size_002",
+          "length": 2500,
+          "width": 1200,
+          "thickness": 18,
+          "unit": "mm",
+          "stock": 15,
+          "price": 140
+        }
+      },
+      "featured": true,
+      "popular": true,
+      "createdAt": 1735689600000,
+      "updatedAt": 1735689600000,
+      "createdBy": "admin_user_001",
+      "status": "active"
+    }
+  },
+  "enquiries": {
+    "enquiry_001": {
+      "id": "enquiry_001",
+      "customerInfo": {
+        "name": "Rahul Sharma",
+        "email": "rahul.sharma@example.com",
+        "phone": "+91 9876543210",
+        "alternatePhone": "+91 9876543211",
+        "address": {
+          "street": "123 Main Street",
+          "city": "Gurugram",
+          "state": "Haryana",
+          "pincode": "122001",
+          "country": "India"
+        },
+        "company": "ABC Constructions",
+        "source": "website"
+      },
+      "selectedGranites": {
+        "selection_001": {
+          "graniteId": "granite_001",
+          "selectedSize": "size_001",
+          "quantity": 50,
+          "selectedFinish": "Polished",
+          "selectedThickness": 20,
+          "estimatedArea": 500,
+          "unit": "sqft",
+          "notes": "For kitchen countertops"
+        }
+      },
+      "projectDetails": {
+        "projectType": "residential",
+        "application": "kitchen",
+        "timeline": "1-month",
+        "budget": {
+          "min": 100000,
+          "max": 150000,
+          "currency": "INR"
+        },
+        "installationRequired": true,
+        "designConsultationRequired": true,
+        "measurementRequired": true,
+        "description": "Modern kitchen renovation project"
+      },
+      "status": "new",
+      "priority": "medium",
+      "assignedTo": "sales_team_001",
+      "notes": {
+        "note_001": {
+          "id": "note_001",
+          "content": "Customer interested in premium finish",
+          "author": "Sales Representative",
+          "type": "customer-communication",
+          "isInternal": false,
+          "createdAt": 1735689600000
+        }
+      },
+      "totalEstimatedCost": 125000,
+      "createdAt": 1735689600000,
+      "updatedAt": 1735689600000,
+      "followUpDate": 1735776000000,
+      "lastContactedAt": 1735689600000
+    }
+  },
+  "users": {
+    "admin_user_001": {
+      "id": "admin_user_001",
+      "username": "admin",
+      "email": "admin@yourcompany.com",
+      "role": "super-admin",
+      "permissions": {
+        "granites": ["create", "read", "update", "delete"],
+        "enquiries": ["create", "read", "update", "delete"],
+        "users": ["create", "read", "update", "delete"],
+        "analytics": ["read"],
+        "settings": ["read", "update"]
+      },
+      "lastLogin": 1735689600000,
+      "createdAt": 1735689600000,
+      "isActive": true,
+      "profile": {
+        "firstName": "System",
+        "lastName": "Administrator",
+        "phone": "+91 98765 43210"
+      }
+    }
+  },
+  "settings": {
+    "company": {
+      "name": "Premium Stone Co.",
+      "email": "info@premiumstone.com",
+      "phone": "+91 98765 43210",
+      "address": "123 Business District, Gurugram, Haryana",
+      "website": "https://premiumstone.com"
+    },
+    "notifications": {
+      "emailEnabled": true,
+      "whatsappEnabled": true,
+      "adminEmail": "admin@premiumstone.com",
+      "adminPhone": "+91 98765 43210"
+    },
+    "business": {
+      "currency": "INR",
+      "timezone": "Asia/Kolkata",
+      "businessHours": {
+        "start": "09:00",
+        "end": "18:00",
+        "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+      }
+    }
+  },
+  "analytics": {
+    "daily": {
+      "2025-01-01": {
+        "date": "2025-01-01",
+        "graniteViews": 45,
+        "enquiriesReceived": 3,
+        "popularGranites": {
+          "granite_001": {
+            "views": 15,
+            "enquiries": 2
+          }
+        }
+      }
+    },
+    "monthly": {
+      "2025-01": {
+        "month": "2025-01",
+        "totalViews": 1250,
+        "totalEnquiries": 45,
+        "conversionRate": 3.6,
+        "topGranites": ["granite_001", "granite_002"]
+      }
+    }
+  },
+  "categories": {
+    "standard": {
+      "name": "Standard",
+      "description": "Quality granite for everyday use",
+      "priceRange": {
+        "min": 80,
+        "max": 150
+      }
+    },
+    "premium": {
+      "name": "Premium",
+      "description": "High-quality granite with unique patterns",
+      "priceRange": {
+        "min": 150,
+        "max": 300
+      }
+    },
+    "luxury": {
+      "name": "Luxury",
+      "description": "Exclusive granite with rare patterns",
+      "priceRange": {
+        "min": 300,
+        "max": 500
+      }
+    }
+  }
+}
