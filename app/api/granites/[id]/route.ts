@@ -1,23 +1,37 @@
-//api/granites/[id]/route
 import { NextRequest, NextResponse } from 'next/server';
 import { graniteService } from '@/lib/services/graniteService';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+function getGraniteIdFromPath(pathname: string): string | null {
+  const segments = pathname.split('/');
+  return segments.at(-1) || null;
+}
+
+export async function GET(request: NextRequest) {
   try {
-    const { id } = params;
+    const id = getGraniteIdFromPath(request.nextUrl.pathname);
+    if (!id) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'INVALID_REQUEST',
+            message: 'Missing granite ID in URL'
+          }
+        },
+        { status: 400 }
+      );
+    }
+
     const granite = await graniteService.getGraniteById(id);
 
     if (!granite) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: { 
-            code: 'NOT_FOUND', 
-            message: 'Granite not found' 
-          } 
+        {
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Granite not found'
+          }
         },
         { status: 404 }
       );
@@ -31,12 +45,12 @@ export async function GET(
   } catch (error) {
     console.error('Error fetching granite:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: { 
-          code: 'INTERNAL_ERROR', 
-          message: 'Failed to fetch granite' 
-        } 
+      {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to fetch granite'
+        }
       },
       { status: 500 }
     );
