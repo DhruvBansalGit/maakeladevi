@@ -93,15 +93,15 @@ export interface Address {
 
 export interface SelectedGranite {
   graniteId: string;
-  granite?: Granite; // Made optional for flexibility
-  selectedSize?: GraniteSize; // Made optional
+  granite: Granite; // Made optional for flexibility
+  selectedSize: GraniteSize; // Made optional
   quantity: number;
-  selectedFinish?: string; // Made optional
-  selectedThickness?: number; // Made optional
-  estimatedArea?: number; // Made optional
-  unit?: 'sqft' | 'sqm'; // Made optional
-  notes?: string;
-  size?: string; // Added for simple size description
+  selectedFinish: string; // Made optional
+  selectedThickness: number; // Made optional
+  estimatedArea: number; // Made optional
+  unit: 'sqft' | 'sqm'; // Made optional
+  notes: string;
+  size: string; // Added for simple size description
 }
 
 export interface ProjectDetails {

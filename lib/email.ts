@@ -1,129 +1,6 @@
 import { NotificationData, EnquiryNote } from '@/types';
 import { formatCurrency, formatDate } from '@/utils/helpers';
-import sgMail from '@sendgrid/mail';
 import nodemailer from 'nodemailer';
-// Email service configuration
-interface EmailConfig {
-  service: string;
-  apiKey: string;
-  from: string;
-  replyTo: string;
-}
-
-interface EmailPayload {
-  to: string;
-  cc?: string[];
-  subject: string;
-  html: string;
-  text: string;
-  replyTo?: string;
-}
-const emailConfig: EmailConfig = {
-  service: process.env.EMAIL_SERVICE || 'sendgrid', // 'sendgrid', 'nodemailer', etc.
-  apiKey: process.env.EMAIL_API_KEY || '',
-  from: process.env.EMAIL_FROM || 'noreply@premiumstone.com',
-  replyTo: process.env.EMAIL_REPLY_TO || 'sales@premiumstone.com'
-};
-
-export async function sendEnquiryEmail(data: NotificationData): Promise<void> {
-  try {
-    // Send confirmation email to customer
-    await sendCustomerConfirmationEmail(data);
-    
-    // Send notification email to admin
-    await sendAdminNotificationEmail(data);
-    
-    console.log('Enquiry emails sent successfully');
-  } catch (error) {
-    console.error('Error sending enquiry emails:', error);
-    throw error;
-  }
-}
-
-async function sendCustomerConfirmationEmail(data: NotificationData): Promise<void> {
-  const { enquiry, customer, selectedGranites, totalValue } = data;
-
-  const htmlContent = generateCustomerEmailHTML(enquiry.id, customer, selectedGranites, totalValue);
-  const textContent = generateCustomerEmailText(enquiry.id, customer, selectedGranites, totalValue);
-
-  const emailData = {
-    to: customer.email,
-    cc: customer.company ? [emailConfig.replyTo] : [],
-    subject: `Enquiry Confirmation - ${enquiry.id} | PremiumStone`,
-    html: htmlContent,
-    text: textContent,
-    replyTo: emailConfig.replyTo
-  };
-
-  await sendEmail(emailData);
-}
-
-async function sendAdminNotificationEmail(data: NotificationData): Promise<void> {
-  const { enquiry, customer, selectedGranites, totalValue, adminEmail } = data;
-
-  const htmlContent = generateAdminEmailHTML(enquiry, customer, selectedGranites, totalValue);
-  const textContent = generateAdminEmailText(enquiry, customer, selectedGranites, totalValue);
-
-  const emailData = {
-    to: adminEmail,
-    subject: `🔔 New Enquiry: ${enquiry.id} - ${customer.name} | PremiumStone`,
-    html: htmlContent,
-    text: textContent,
-    replyTo: customer.email
-  };
-
-  await sendEmail(emailData);
-}
-
-async function sendEmail(emailData: EmailPayload): Promise<void> {
-  // This is a mock implementation. In a real application, you would integrate with
-  // an email service like SendGrid, AWS SES, Nodemailer, etc.
-  
-  if (emailConfig.service === 'sendgrid') {
-    // SendGrid implementation
-    // const sgMail = require('@sendgrid/mail');
-    sgMail.setApiKey(emailConfig.apiKey);
-    
-    const msg = {
-      to: emailData.to,
-      from: emailConfig.from,
-      subject: emailData.subject,
-      text: emailData.text,
-      html: emailData.html,
-      replyTo: emailData.replyTo
-    };
-    
-    await sgMail.send(msg);
-  } else if (emailConfig.service === 'nodemailer') {
-    // Nodemailer implementation (for SMTP)
-    
-    const transporter = nodemailer.createTransporter({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
-    });
-    
-    await transporter.sendMail({
-      from: emailConfig.from,
-      to: emailData.to,
-      subject: emailData.subject,
-      text: emailData.text,
-      html: emailData.html,
-      replyTo: emailData.replyTo
-    });
-  } else {
-    // Mock/Development mode - just log the email
-    console.log('📧 Email would be sent:', {
-      to: emailData.to,
-      subject: emailData.subject,
-      preview: emailData.text.substring(0, 100) + '...'
-    });
-  }
-}
 
 function generateCustomerEmailHTML(enquiryId: string, customer: NotificationData['customer'], selectedGranites: NotificationData['selectedGranites'], totalValue: number): string {
   return `
@@ -319,7 +196,7 @@ function generateAdminEmailHTML(enquiry: NotificationData['enquiry'], customer: 
             <li><strong>Type:</strong> ${enquiry.projectDetails.projectType}</li>
             <li><strong>Application:</strong> ${enquiry.projectDetails.application}</li>
             <li><strong>Timeline:</strong> ${enquiry.projectDetails.timeline}</li>
-            <li><strong>Budget:</strong> ${formatCurrency(enquiry.projectDetails.budget.min)} - ${formatCurrency(enquiry.projectDetails.budget.max)}</li>
+            <li><strong>Budget:</strong> ${formatCurrency(enquiry.projectDetails.budget?.min ?? 0)} - ${formatCurrency(enquiry.projectDetails.budget?.max ?? 0)}</li>
             <li><strong>Installation Required:</strong> ${enquiry.projectDetails.installationRequired ? '✅ Yes' : '❌ No'}</li>
             <li><strong>Design Consultation:</strong> ${enquiry.projectDetails.designConsultationRequired ? '✅ Yes' : '❌ No'}</li>
             <li><strong>Measurement Required:</strong> ${enquiry.projectDetails.measurementRequired ? '✅ Yes' : '❌ No'}</li>
@@ -401,7 +278,7 @@ PROJECT DETAILS:
 - Type: ${enquiry.projectDetails.projectType}
 - Application: ${enquiry.projectDetails.application}
 - Timeline: ${enquiry.projectDetails.timeline}
-- Budget: ${formatCurrency(enquiry.projectDetails.budget.min)} - ${formatCurrency(enquiry.projectDetails.budget.max)}
+- Budget: ${formatCurrency(enquiry.projectDetails.budget?.min ?? 0)} - ${formatCurrency(enquiry.projectDetails.budget?.max ?? 0)}
 - Installation Required: ${enquiry.projectDetails.installationRequired ? 'Yes' : 'No'}
 - Design Consultation: ${enquiry.projectDetails.designConsultationRequired ? 'Yes' : 'No'}
 - Measurement Required: ${enquiry.projectDetails.measurementRequired ? 'Yes' : 'No'}
@@ -438,4 +315,96 @@ QUICK ACTIONS:
 PremiumStone Admin Panel
 Auto-generated on ${formatDate(new Date(), 'long')}
   `;
+}
+
+function normalizeEnquiry(enquiry: NotificationData['enquiry']): NotificationData['enquiry'] {
+  return {
+    ...enquiry,
+    projectDetails: {
+      projectType: enquiry.projectDetails?.projectType || 'residential',
+      application: enquiry.projectDetails?.application || 'kitchen',
+      timeline: enquiry.projectDetails?.timeline || 'flexible',
+      budget: enquiry.projectDetails?.budget || {
+        min: 0,
+        max: 0,
+        currency: 'INR'
+      },
+      installationRequired: enquiry.projectDetails?.installationRequired ?? false,
+      designConsultationRequired: enquiry.projectDetails?.designConsultationRequired ?? false,
+      measurementRequired: enquiry.projectDetails?.measurementRequired ?? false,
+      description: enquiry.projectDetails?.description || ''
+    },
+    notes: enquiry.notes || []
+  };
+}
+
+const EMAIL_USER = "bansaldhruv03@gmail.com"
+const EMAIL_PASS = "Hello@world"
+const REPLY_TO = process.env.EMAIL_REPLY_TO || 'sales@premiumstone.com';
+
+export async function sendEnquiryEmail(data: NotificationData): Promise<void> {
+  try {
+    await sendCustomerConfirmationEmail(data);
+    await sendAdminNotificationEmail(data);
+    console.log('✅ Enquiry emails sent successfully');
+  } catch (error) {
+    console.error('❌ Error sending enquiry emails:', error);
+    throw error;
+  }
+}
+
+async function sendCustomerConfirmationEmail(data: NotificationData): Promise<void> {
+  const {customer, selectedGranites, totalValue } = data;
+const enquiry = normalizeEnquiry(data.enquiry);
+  await sendEmail({
+    to: customer.email,
+    subject: `Enquiry Confirmation - ${enquiry.id} | PremiumStone`,
+    html: generateCustomerEmailHTML(enquiry.id, customer, selectedGranites, totalValue),
+    text: generateCustomerEmailText(enquiry.id, customer, selectedGranites, totalValue),
+    replyTo: REPLY_TO
+  });
+}
+
+async function sendAdminNotificationEmail(data: NotificationData): Promise<void> {
+  const { customer, selectedGranites, totalValue, adminEmail } = data;
+  const enquiry = normalizeEnquiry(data.enquiry);
+
+  await sendEmail({
+    to: adminEmail,
+    subject: `🔔 New Enquiry: ${enquiry.id} - ${customer.name} | PremiumStone`,
+    html: generateAdminEmailHTML(enquiry, customer, selectedGranites, totalValue),
+    text: generateAdminEmailText(enquiry, customer, selectedGranites, totalValue),
+    replyTo: customer.email
+  });
+}
+
+async function sendEmail({
+  to,
+  subject,
+  html,
+  text,
+  replyTo
+}: {
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+  replyTo?: string;
+}): Promise<void> {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASS
+    }
+  });
+
+  await transporter.sendMail({
+    from: EMAIL_USER,
+    to,
+    subject,
+    text,
+    html,
+    replyTo
+  });
 }

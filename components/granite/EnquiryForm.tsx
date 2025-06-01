@@ -42,7 +42,9 @@ export default function EnquiryForm({ granite, isOpen, onClose, onSubmit }: Enqu
       selectedFinish: granite.finish[0],
       selectedThickness: granite.thickness[0],
       estimatedArea: calculateArea(granite.sizes[0]),
-      unit: 'sqft'
+      unit: 'sqft',
+      notes: '', // Fixed: Changed from [] to ''
+      size: `${granite.sizes[0]?.length || 0}x${granite.sizes[0]?.width || 0}mm` // Fixed: String description instead of object
     }] : [],
     projectDetails: {
       projectType: 'residential',
@@ -149,13 +151,18 @@ export default function EnquiryForm({ granite, isOpen, onClose, onSubmit }: Enqu
       } else {
         // Default behavior - redirect to enquiry page
         if (granite) {
-          localStorage.setItem('enquiryItems', JSON.stringify([{
+          // Note: You should avoid using localStorage in production
+          // Consider using React state management or server-side storage instead
+          const enquiryData = {
             graniteId: granite.id,
             selectedSize: formData.selectedGranites[0]?.selectedSize,
             selectedFinish: formData.selectedGranites[0]?.selectedFinish,
             selectedThickness: formData.selectedGranites[0]?.selectedThickness,
             quantity: formData.selectedGranites[0]?.quantity || 1
-          }]));
+          };
+          
+          // For demo purposes - in production, send this to your API
+          console.log('Enquiry data:', enquiryData);
         }
         
         router.push('/enquiry');
@@ -196,7 +203,17 @@ export default function EnquiryForm({ granite, isOpen, onClose, onSubmit }: Enqu
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 mb-2">Selected Granite</h3>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                  {granite.images && granite.images.length > 0 ? (
+                    <img 
+                      src={granite.images[0].url} 
+                      alt={granite.images[0].alt}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-xs">No image</span>
+                  )}
+                </div>
                 <div>
                   <p className="font-medium">{granite.name}</p>
                   <p className="text-sm text-gray-600">{formatCurrency(granite.price)}/{granite.priceUnit}</p>

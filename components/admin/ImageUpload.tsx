@@ -13,6 +13,11 @@ interface ImageUploadProps {
   folder?: string;
 }
 
+function getImageType(index: number, hasImages: boolean): GraniteImage['type'] {
+  return index === 0 && !hasImages ? 'primary' : 'secondary';
+}
+
+
 export default function ImageUpload({ 
   images, 
   onImagesChange, 
@@ -57,7 +62,7 @@ export default function ImageUpload({
             id: `img_${Date.now()}_${i}`,
             url: uploadResult.url,
             alt: `Granite Image ${images.length + newImages.length + 1}`,
-            type: (images.length === 0 && newImages.length === 0) ? 'primary' : 'secondary',
+           type: ((images.length === 0 && newImages.length === 0) ? 'primary' : 'secondary') as 'primary' | 'secondary',
             order: images.length + newImages.length + 1,
             cloudinaryPublicId: uploadResult.publicId,
             width: uploadResult.width,
@@ -112,7 +117,7 @@ export default function ImageUpload({
   const setImageAsPrimary = (index: number) => {
     const updatedImages = images.map((img, i) => ({
       ...img,
-      type: i === index ? 'primary' : 'secondary'
+      type: (i === index ? 'primary' : 'secondary') as GraniteImage['type']
     }));
     onImagesChange(updatedImages);
   };

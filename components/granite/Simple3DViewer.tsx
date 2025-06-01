@@ -93,11 +93,10 @@ export default function Simple3DViewer({
         const [
           THREE,
           { GLTFLoader },
-          { OrbitControls }
         ] = await Promise.all([
           import('three'),
           import('three/examples/jsm/loaders/GLTFLoader.js'),
-          import('three/examples/jsm/controls/OrbitControls.js')
+          // import('three/examples/jsm/controls/OrbitControls.js')
         ]);
 
         if (!canvasRef.current) return;
@@ -289,6 +288,7 @@ export default function Simple3DViewer({
           model.traverse((child: THREE.Object3D) => {
             if ((child as THREE.Mesh).isMesh) {
               meshCount++;
+              const mesh = child as THREE.Mesh;
               console.log(`🎨 Applying texture to mesh ${meshCount}:`, child.name || 'unnamed');
 
               // Create new material with granite texture
@@ -301,9 +301,9 @@ export default function Simple3DViewer({
 
               // Ensure the material uses the texture
               material.needsUpdate = true;
-              child.material = material;
-              child.castShadow = true;
-              child.receiveShadow = true;
+              mesh.material = material;
+              mesh.castShadow = true;
+              mesh.receiveShadow = true;
 
               console.log('✅ Texture applied to mesh:', child.name || 'unnamed');
             }

@@ -161,7 +161,9 @@ export default function EnquiryPage() {
         selectedFinish: item.selectedFinish || mockGranites[item.graniteId].finish[0],
         selectedThickness: item.selectedThickness || mockGranites[item.graniteId].thickness[0],
         estimatedArea: calculateArea(item.selectedSize || mockGranites[item.graniteId].sizes[0]),
-        unit: 'sqft'
+        unit: 'sqft',
+           notes: '', // ✅ fill with default
+    size: '' 
       }));
 
     setSelectedGranites(selectedItems);

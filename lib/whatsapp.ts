@@ -180,7 +180,7 @@ ${customer.company ? `• Company: ${customer.company}` : ''}
 • Type: ${enquiry.projectDetails.projectType}
 • Application: ${enquiry.projectDetails.application}
 • Timeline: ${enquiry.projectDetails.timeline}
-• Budget: ${formatCurrency(enquiry.projectDetails.budget.min)}-${formatCurrency(enquiry.projectDetails.budget.max)}
+• Budget: ${formatCurrency(enquiry.projectDetails.budget?.min ?? 0)}-${formatCurrency(enquiry.projectDetails.budget?.max ?? 0)}
 
 📦 *Selected Granites:*
 ${selectedItems}
@@ -293,7 +293,7 @@ export async function sendBulkWhatsAppMessage(
 export interface WhatsAppMessageStatus {
   messageId: string;
   to: string;
-  status: 'queued' | 'sent' | 'delivered' | 'read' | 'failed';
+  status: string;
   timestamp: Date;
   errorMessage?: string;
 }
@@ -433,8 +433,11 @@ export async function sendPromotionalCampaign(
     }
     
     message += '\n\n📞 +91 98765 43210 | premiumstone.com';
-    
-    await sendBulkWhatsAppMessage(phoneNumbers, message);
+    const variables = [
+  { name: 'Amit', offerCode: 'WELCOME10', validUntil: '15 June' },
+  { name: 'Sara', offerCode: 'WELCOME10', validUntil: '15 June' },
+];
+    await sendBulkWhatsAppMessage(phoneNumbers, message,variables);
     
     console.log(`Promotional campaign "${campaignData.title}" sent to ${phoneNumbers.length} recipients`);
   } catch (error) {
